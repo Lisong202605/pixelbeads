@@ -16,6 +16,7 @@ export function Editor() {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [canvasUrl, setCanvasUrl] = useState<string | null>(null);
+
   // Parameters
   const [gridWidth, setGridWidth] = useState(140);
   const [maxColors, setMaxColors] = useState(40);
@@ -40,6 +41,7 @@ export function Editor() {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+
   const brands = [
     { id: 'perler', name: 'Perler', type: '硬质' },
     { id: 'artkal-s', name: 'Artkal S', type: '硬质' },
