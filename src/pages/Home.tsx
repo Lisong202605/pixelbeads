@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Grid, Download, Palette, Sliders, MousePointer, Zap, ArrowRight, Upload } from 'lucide-react';
+import { Grid, Download, Palette, Sliders, MousePointer, Zap, Upload } from 'lucide-react';
 
 export function Home() {
   const features = [
@@ -16,7 +16,7 @@ export function Home() {
     {
       icon: Download,
       title: 'Pattern Export',
-      description: 'Export as PDF, PNG, or SVG. Print-ready templates with color charts.',
+      description: 'Export as PDF or PNG. Print-ready templates with color charts.',
     },
     {
       icon: MousePointer,
@@ -51,13 +51,6 @@ export function Home() {
       title: 'Export & Create',
       description: 'Download your pattern as PDF with color chart and start beading!',
     },
-  ];
-
-  const resources = [
-    { title: 'Photo to Pattern', desc: 'Convert photos into printable bead grids', to: '/image-to-pattern' },
-    { title: 'Color Chart Guide', desc: 'Perler, Hama, Artkal, and MARD colors', to: '/guide' },
-    { title: 'Board Size Guide', desc: 'Choose the right grid before export', to: '/calculator' },
-    { title: 'Brand Comparison', desc: 'Perler vs Hama vs Artkal', to: '/guide' },
   ];
 
   const faqs = [
@@ -163,32 +156,8 @@ export function Home() {
         </div>
       </section>
 
-      {/* Resources */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Resources</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {resources.map((resource) => (
-              <Link
-                key={resource.title}
-                to={resource.to}
-                className="group p-4 bg-gray-50 rounded-xl hover:bg-red-50 transition-colors"
-              >
-                <h3 className="font-semibold text-gray-900 group-hover:text-red-600 transition-colors">
-                  {resource.title}
-                </h3>
-                <p className="text-sm text-gray-600 mt-1">{resource.desc}</p>
-                <ArrowRight className="w-4 h-4 text-red-500 mt-2 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* FAQ */}
-      <section className="py-20 bg-gray-50">
+      <section className="py-20 bg-white">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -197,7 +166,7 @@ export function Home() {
           </div>
           <div className="space-y-4">
             {faqs.map((faq, index) => (
-              <div key={index} className="bg-white rounded-xl p-6 shadow-sm">
+              <div key={index} className="bg-gray-50 rounded-xl p-6">
                 <h3 className="font-semibold text-gray-900 mb-2">{faq.q}</h3>
                 <p className="text-gray-600">{faq.a}</p>
               </div>
@@ -207,7 +176,7 @@ export function Home() {
       </section>
 
       {/* About */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
