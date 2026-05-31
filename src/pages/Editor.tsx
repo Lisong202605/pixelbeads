@@ -19,9 +19,9 @@ export function Editor() {
   ];
 
   return (
-    <div className="h-[calc(100vh-64px)] flex flex-col">
+    <div className="flex flex-col" style={{ height: 'calc(100vh - 64px)' }}>
       {/* Toolbar */}
-      <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between">
+      <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center space-x-2">
           {tools.map((tool) => (
             <button
@@ -69,9 +69,9 @@ export function Editor() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex">
+      <div className="flex-1 flex overflow-hidden">
         {/* Canvas */}
-        <div className="flex-1 bg-gray-100 flex items-center justify-center overflow-auto">
+        <div className="flex-1 bg-gray-100 flex items-center justify-center overflow-auto p-4">
           <div
             className="bg-white shadow-lg"
             style={{
@@ -84,7 +84,7 @@ export function Editor() {
         </div>
 
         {/* Sidebar */}
-        <div className="w-64 bg-white border-l border-gray-200 p-4">
+        <div className="w-64 bg-white border-l border-gray-200 p-4 overflow-y-auto">
           <h3 className="font-semibold text-gray-900 mb-4 flex items-center">
             <Palette className="w-5 h-5 mr-2" />
             Color Palette
