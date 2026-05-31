@@ -55,10 +55,8 @@ export function Home() {
 
   const resources = [
     { title: 'Photo to Pattern', desc: 'Convert photos into printable bead grids', to: '/image-to-pattern' },
-    { title: 'Minecraft Patterns', desc: 'Block-style bead pattern settings', to: '/templates' },
     { title: 'Color Chart Guide', desc: 'Perler, Hama, Artkal, and MARD colors', to: '/guide' },
     { title: 'Board Size Guide', desc: 'Choose the right grid before export', to: '/calculator' },
-    { title: 'Cute Patterns', desc: 'Cats, hearts, charms, and gift ideas', to: '/templates' },
     { title: 'Brand Comparison', desc: 'Perler vs Hama vs Artkal', to: '/guide' },
   ];
 
