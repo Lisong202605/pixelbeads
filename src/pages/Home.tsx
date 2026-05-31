@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Image, Grid, Calculator, Palette, Upload, ArrowRight, Settings, Download, X, Loader2 } from 'lucide-react';
+import { Image, Grid, Calculator, Palette, Upload, ArrowRight, Settings, Download, X, Loader2, Eye, EyeOff } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 
 export function Home() {
@@ -13,7 +13,9 @@ export function Home() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [patternResult, setPatternResult] = useState<any>(null);
   const [canvasUrl, setCanvasUrl] = useState<string | null>(null);
-  const [showSettings, setShowSettings] = useState(false);
+  const [showGrid, setShowGrid] = useState(true);
+  const [previewScale, setPreviewScale] = useState(8);
+  const [activeTab, setActiveTab] = useState<'settings' | 'colors'>('settings');
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -120,9 +122,8 @@ export function Home() {
 
         offCtx.putImageData(imageData, 0, 0);
 
-        const scale = Math.max(4, Math.min(12, Math.floor(500 / pixelWidth)));
-        const displayWidth = pixelWidth * scale;
-        const displayHeight = pixelHeight * scale;
+        const displayWidth = pixelWidth * previewScale;
+        const displayHeight = pixelHeight * previewScale;
 
         const displayCanvas = document.createElement('canvas');
         displayCanvas.width = displayWidth;
@@ -130,6 +131,24 @@ export function Home() {
         const displayCtx = displayCanvas.getContext('2d')!;
         displayCtx.imageSmoothingEnabled = false;
         displayCtx.drawImage(offCanvas, 0, 0, displayWidth, displayHeight);
+
+        // Draw grid if enabled
+        if (showGrid) {
+          displayCtx.strokeStyle = 'rgba(0,0,0,0.15)';
+          displayCtx.lineWidth = 1;
+          for (let x = 0; x <= pixelWidth; x++) {
+            displayCtx.beginPath();
+            displayCtx.moveTo(x * previewScale, 0);
+            displayCtx.lineTo(x * previewScale, displayHeight);
+            displayCtx.stroke();
+          }
+          for (let y = 0; y <= pixelHeight; y++) {
+            displayCtx.beginPath();
+            displayCtx.moveTo(0, y * previewScale);
+            displayCtx.lineTo(displayWidth, y * previewScale);
+            displayCtx.stroke();
+          }
+        }
 
         const dataUrl = displayCanvas.toDataURL('image/png');
         setCanvasUrl(dataUrl);
@@ -152,7 +171,7 @@ export function Home() {
       setIsProcessing(false);
     };
     img.src = uploadedImage;
-  }, [uploadedImage, gridSize, colorLimit]);
+  }, [uploadedImage, gridSize, colorLimit, previewScale, showGrid]);
 
   useEffect(() => {
     if (uploadedImage && uploadedFile) {
@@ -259,7 +278,7 @@ export function Home() {
           </div>
 
           {/* Upload Area */}
-          <div className="max-w-3xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             {!uploadedImage ? (
               <div
                 onDragOver={handleDragOver}
@@ -286,176 +305,268 @@ export function Home() {
                 </label>
               </div>
             ) : (
-              <div className="space-y-6">
-                {/* Preview */}
-                <div className="bg-white rounded-2xl p-6 border border-gray-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-semibold text-gray-900">Pattern Preview</h3>
-                    <button
-                      onClick={() => {
-                        setUploadedImage(null);
-                        setUploadedFile(null);
-                        setPatternResult(null);
-                        setCanvasUrl(null);
-                      }}
-                      className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                {/* Left: Preview */}
+                <div className="lg:col-span-2 space-y-4">
+                  <div className="bg-white rounded-2xl p-6 border border-gray-200">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold text-gray-900">Pattern Preview</h3>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => setShowGrid(!showGrid)}
+                          className={`p-2 rounded-lg transition-colors ${showGrid ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}`}
+                          title="Toggle Grid"
+                        >
+                          {showGrid ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setUploadedImage(null);
+                            setUploadedFile(null);
+                            setPatternResult(null);
+                            setCanvasUrl(null);
+                          }}
+                          className="w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {isProcessing ? (
+                      <div className="text-center py-12">
+                        <div className="animate-spin w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4" />
+                        <p className="text-gray-500">Processing...</p>
+                      </div>
+                    ) : canvasUrl ? (
+                      <div className="text-center">
+                        <img
+                          src={canvasUrl}
+                          alt="Pattern Preview"
+                          className="rounded-lg shadow-lg border border-gray-200 mx-auto"
+                          style={{ 
+                            imageRendering: 'pixelated',
+                            maxWidth: '100%',
+                            maxHeight: '500px'
+                          }}
+                        />
+                        <p className="text-sm text-gray-500 mt-2">
+                          {patternResult?.width || gridSize} × {patternResult?.height || Math.round(gridSize * 0.75)} beads
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="text-center py-12">
+                        <Palette className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <p className="text-gray-500">Processing your image...</p>
+                      </div>
+                    )}
                   </div>
 
-                  {isProcessing ? (
-                    <div className="text-center py-12">
-                      <div className="animate-spin w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4" />
-                      <p className="text-gray-500">Processing...</p>
-                    </div>
-                  ) : canvasUrl ? (
-                    <div className="text-center">
-                      <img
-                        src={canvasUrl}
-                        alt="Pattern Preview"
-                        className="rounded-lg shadow-lg border border-gray-200 mx-auto"
-                        style={{ 
-                          imageRendering: 'pixelated',
-                          maxWidth: '100%',
-                          maxHeight: '400px'
-                        }}
-                      />
-                      <p className="text-sm text-gray-500 mt-2">
-                        {patternResult?.width || gridSize} × {patternResult?.height || Math.round(gridSize * 0.75)} beads
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="text-center py-12">
-                      <Palette className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                      <p className="text-gray-500">Processing your image...</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Settings */}
-                <div className="bg-white rounded-2xl p-6 border border-gray-200">
-                  <button
-                    onClick={() => setShowSettings(!showSettings)}
-                    className="flex items-center justify-between w-full"
-                  >
-                    <h3 className="font-semibold text-gray-900 flex items-center">
-                      <Settings className="w-5 h-5 mr-2" />
-                      Settings
-                    </h3>
-                    <span className="text-sm text-gray-500">
-                      {showSettings ? 'Hide' : 'Show'}
-                    </span>
-                  </button>
-
-                  {showSettings && (
-                    <div className="mt-4 space-y-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Bead Brand</label>
-                        <select
-                          value={brand}
-                          onChange={(e) => setBrand(e.target.value)}
-                          className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
-                        >
-                          {brands.map((b) => (
-                            <option key={b.id} value={b.id}>
-                              {b.name} ({b.colors} colors)
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Grid Width: {gridSize} cols
-                        </label>
-                        <input
-                          type="range"
-                          min="20"
-                          max="100"
-                          value={gridSize}
-                          onChange={(e) => setGridSize(Number(e.target.value))}
-                          className="w-full"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Color Limit: {colorLimit}
-                        </label>
-                        <input
-                          type="range"
-                          min="4"
-                          max="32"
-                          value={colorLimit}
-                          onChange={(e) => setColorLimit(Number(e.target.value))}
-                          className="w-full"
-                        />
-                      </div>
-
-                      <button
-                        onClick={processImage}
-                        disabled={isProcessing}
-                        className="w-full flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50"
+                  {/* Export Buttons */}
+                  {canvasUrl && !isProcessing && (
+                    <div className="flex gap-4">
+                      <button 
+                        onClick={exportPDF}
+                        className="flex-1 flex items-center justify-center px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
                       >
-                        {isProcessing ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Processing...
-                          </>
-                        ) : (
-                          <>
-                            <Grid className="w-4 h-4 mr-2" />
-                            Regenerate Pattern
-                          </>
-                        )}
+                        <Download className="w-5 h-5 mr-2" />
+                        Export PDF
+                      </button>
+                      <button 
+                        onClick={exportPNG}
+                        className="flex-1 flex items-center justify-center px-4 py-3 border-2 border-red-500 text-red-500 rounded-xl hover:bg-red-50 transition-colors"
+                      >
+                        <Download className="w-5 h-5 mr-2" />
+                        Export PNG
                       </button>
                     </div>
                   )}
                 </div>
 
-                {/* Color Chart */}
-                {patternResult?.colorChart && patternResult.colorChart.length > 0 && (
-                  <div className="bg-white rounded-2xl p-6 border border-gray-200">
-                    <h3 className="font-semibold text-gray-900 mb-4">
-                      Color Chart ({patternResult.colorChart.length} colors)
-                    </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                      {patternResult.colorChart.map((color: any, index: number) => (
-                        <div key={index} className="flex items-center space-x-2">
-                          <div
-                            className="w-6 h-6 rounded border border-gray-200 flex-shrink-0"
-                            style={{ backgroundColor: `rgb(${color.rgb.join(',')})` }}
+                {/* Right: Settings Panel */}
+                <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                  {/* Tabs */}
+                  <div className="flex border-b border-gray-200">
+                    <button
+                      onClick={() => setActiveTab('settings')}
+                      className={`flex-1 py-3 text-sm font-medium transition-colors ${
+                        activeTab === 'settings'
+                          ? 'text-red-600 border-b-2 border-red-500'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      <Settings className="w-4 h-4 inline mr-1" />
+                      Settings
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('colors')}
+                      className={`flex-1 py-3 text-sm font-medium transition-colors ${
+                        activeTab === 'colors'
+                          ? 'text-red-600 border-b-2 border-red-500'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      <Palette className="w-4 h-4 inline mr-1" />
+                      Colors
+                    </button>
+                  </div>
+
+                  <div className="p-4 max-h-[600px] overflow-y-auto">
+                    {activeTab === 'settings' ? (
+                      <div className="space-y-6">
+                        {/* Bead Brand */}
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">Bead Brand</label>
+                          <select
+                            value={brand}
+                            onChange={(e) => setBrand(e.target.value)}
+                            className="w-full p-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                          >
+                            {brands.map((b) => (
+                              <option key={b.id} value={b.id}>
+                                {b.name} ({b.colors} colors)
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+
+                        {/* Grid Size */}
+                        <div>
+                          <div className="flex justify-between mb-2">
+                            <label className="text-sm font-medium text-gray-700">Grid Width</label>
+                            <span className="text-sm text-red-600 font-medium">{gridSize} cols</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="20"
+                            max="100"
+                            value={gridSize}
+                            onChange={(e) => setGridSize(Number(e.target.value))}
+                            className="w-full accent-red-500"
                           />
-                          <div className="text-sm min-w-0">
-                            <p className="font-medium text-gray-900 truncate">{color.name}</p>
-                            <p className="text-gray-500">{color.count} beads</p>
+                          <div className="flex justify-between text-xs text-gray-400 mt-1">
+                            <span>20</span>
+                            <span>100</span>
                           </div>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
-                {/* Export Buttons */}
-                {canvasUrl && !isProcessing && (
-                  <div className="flex gap-4">
-                    <button 
-                      onClick={exportPDF}
-                      className="flex-1 flex items-center justify-center px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
-                    >
-                      <Download className="w-5 h-5 mr-2" />
-                      Export PDF
-                    </button>
-                    <button 
-                      onClick={exportPNG}
-                      className="flex-1 flex items-center justify-center px-4 py-3 border-2 border-red-500 text-red-500 rounded-xl hover:bg-red-50 transition-colors"
-                    >
-                      <Download className="w-5 h-5 mr-2" />
-                      Export PNG
-                    </button>
+                        {/* Color Limit */}
+                        <div>
+                          <div className="flex justify-between mb-2">
+                            <label className="text-sm font-medium text-gray-700">Color Limit</label>
+                            <span className="text-sm text-red-600 font-medium">{colorLimit}</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="4"
+                            max="32"
+                            value={colorLimit}
+                            onChange={(e) => setColorLimit(Number(e.target.value))}
+                            className="w-full accent-red-500"
+                          />
+                          <div className="flex justify-between text-xs text-gray-400 mt-1">
+                            <span>4</span>
+                            <span>32</span>
+                          </div>
+                        </div>
+
+                        {/* Preview Scale */}
+                        <div>
+                          <div className="flex justify-between mb-2">
+                            <label className="text-sm font-medium text-gray-700">Preview Size</label>
+                            <span className="text-sm text-red-600 font-medium">{previewScale}x</span>
+                          </div>
+                          <input
+                            type="range"
+                            min="4"
+                            max="16"
+                            value={previewScale}
+                            onChange={(e) => setPreviewScale(Number(e.target.value))}
+                            className="w-full accent-red-500"
+                          />
+                          <div className="flex justify-between text-xs text-gray-400 mt-1">
+                            <span>4x</span>
+                            <span>16x</span>
+                          </div>
+                        </div>
+
+                        {/* Grid Toggle */}
+                        <div className="flex items-center justify-between">
+                          <label className="text-sm font-medium text-gray-700">Show Grid</label>
+                          <button
+                            onClick={() => setShowGrid(!showGrid)}
+                            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                              showGrid ? 'bg-red-500' : 'bg-gray-200'
+                            }`}
+                          >
+                            <span
+                              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                showGrid ? 'translate-x-6' : 'translate-x-1'
+                              }`}
+                            />
+                          </button>
+                        </div>
+
+                        {/* Regenerate Button */}
+                        <button
+                          onClick={processImage}
+                          disabled={isProcessing}
+                          className="w-full flex items-center justify-center px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors disabled:opacity-50 font-medium"
+                        >
+                          {isProcessing ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Processing...
+                            </>
+                          ) : (
+                            <>
+                              <Grid className="w-4 h-4 mr-2" />
+                              Regenerate Pattern
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        {/* Color Chart */}
+                        {patternResult?.colorChart && patternResult.colorChart.length > 0 ? (
+                          <div>
+                            <div className="mb-4 p-3 bg-red-50 rounded-lg">
+                              <p className="text-sm font-medium text-red-900">
+                                Total Colors: {patternResult.colorChart.length}
+                              </p>
+                              <p className="text-xs text-red-700">
+                                Total Beads: {patternResult.colorChart.reduce((sum: number, c: any) => sum + c.count, 0)}
+                              </p>
+                            </div>
+                            <div className="space-y-2">
+                              {patternResult.colorChart.map((color: any, index: number) => (
+                                <div key={index} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded-lg">
+                                  <div
+                                    className="w-8 h-8 rounded border border-gray-200 flex-shrink-0"
+                                    style={{ backgroundColor: `rgb(${color.rgb.join(',')})` }}
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-gray-900">{color.name}</p>
+                                    <p className="text-xs text-gray-500">{color.count} beads</p>
+                                  </div>
+                                  <div className="text-xs text-gray-400">
+                                    {Math.round((color.count / patternResult.colorChart.reduce((sum: number, c: any) => sum + c.count, 0)) * 100)}%
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="text-center py-8">
+                            <Palette className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                            <p className="text-gray-500 text-sm">Upload an image to see colors</p>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             )}
           </div>
