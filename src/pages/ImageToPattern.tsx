@@ -1,8 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { Upload, ImageIcon, Settings, Download, Grid, Palette, X, Loader2 } from 'lucide-react';
 
-const API_URL = 'https://pixelbeads-api.lisong20260508.workers.dev';
-
 export function ImageToPattern() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
@@ -14,6 +12,7 @@ export function ImageToPattern() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [patternResult, setPatternResult] = useState<any>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -55,134 +54,151 @@ export function ImageToPattern() {
     }
   }, []);
 
-  // Process image via API
-  const processImage = useCallback(async () => {
-    if (!uploadedFile) return;
-    
-    setIsProcessing(true);
-    try {
-      const formData = new FormData();
-      formData.append('image', uploadedFile);
-      formData.append('gridWidth', gridSize.toString());
-      formData.append('colorLimit', colorLimit.toString());
-      formData.append('brand', brand);
-
-      const response = await fetch(`${API_URL}/api/process`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Processing failed');
-      }
-
-      const result = await response.json();
-      setPatternResult(result);
-    } catch (error) {
-      console.error('Error processing image:', error);
-      // Fallback to client-side processing
-      processClientSide();
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [uploadedFile, gridSize, colorLimit, brand]);
-
-  // Client-side processing fallback
-  const processClientSide = useCallback(() => {
+  // Process image - client side only (reliable)
+  const processImage = useCallback(() => {
     if (!uploadedImage || !canvasRef.current) return;
     
     setIsProcessing(true);
     const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
     img.onload = () => {
-      const canvas = canvasRef.current!;
-      const ctx = canvas.getContext('2d')!;
-      
-      const aspectRatio = img.width / img.height;
-      const pixelWidth = gridSize;
-      const pixelHeight = Math.round(pixelWidth / aspectRatio);
-      
-      canvas.width = pixelWidth;
-      canvas.height = pixelHeight;
-      
-      ctx.drawImage(img, 0, 0, pixelWidth, pixelHeight);
-      
-      const imageData = ctx.getImageData(0, 0, pixelWidth, pixelHeight);
-      const data = imageData.data;
-      
-      // Simple color quantization
-      const colorMap = new Map<string, number>();
-      
-      for (let i = 0; i < data.length; i += 4) {
-        const r = Math.round(data[i] / 32) * 32;
-        const g = Math.round(data[i + 1] / 32) * 32;
-        const b = Math.round(data[i + 2] / 32) * 32;
-        const color = `rgb(${r},${g},${b})`;
-        colorMap.set(color, (colorMap.get(color) || 0) + 1);
-      }
-      
-      const sortedColors = Array.from(colorMap.entries())
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, colorLimit)
-        .map(([color]) => color);
-      
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
+      try {
+        const canvas = canvasRef.current!;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
         
-        let nearestColor = sortedColors[0];
-        let minDistance = Infinity;
+        // Calculate pixel dimensions
+        const aspectRatio = img.width / img.height;
+        const pixelWidth = gridSize;
+        const pixelHeight = Math.max(1, Math.round(pixelWidth / aspectRatio));
         
-        for (const color of sortedColors) {
-          const match = color.match(/rgb\((\d+),(\d+),(\d+)\)/);
-          if (match) {
-            const cr = parseInt(match[1]);
-            const cg = parseInt(match[2]);
-            const cb = parseInt(match[3]);
+        // Create offscreen canvas for processing
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = pixelWidth;
+        offCanvas.height = pixelHeight;
+        const offCtx = offCanvas.getContext('2d', { willReadFrequently: true })!;
+        
+        // Draw small version for pixelation
+        offCtx.drawImage(img, 0, 0, pixelWidth, pixelHeight);
+        
+        // Get pixel data
+        const imageData = offCtx.getImageData(0, 0, pixelWidth, pixelHeight);
+        const data = imageData.data;
+        
+        // Color quantization - collect all colors
+        const colorMap = new Map<string, {r: number, g: number, b: number, count: number}>();
+        
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+          
+          if (a < 128) continue; // Skip transparent pixels
+          
+          // Quantize to reduce colors
+          const qr = Math.round(r / 32) * 32;
+          const qg = Math.round(g / 32) * 32;
+          const qb = Math.round(b / 32) * 32;
+          const key = `${qr},${qg},${qb}`;
+          
+          if (colorMap.has(key)) {
+            colorMap.get(key)!.count++;
+          } else {
+            colorMap.set(key, { r: qr, g: qg, b: qb, count: 1 });
+          }
+        }
+        
+        // Get top colors
+        const sortedColors = Array.from(colorMap.values())
+          .sort((a, b) => b.count - a.count)
+          .slice(0, colorLimit);
+        
+        // Map each pixel to nearest color
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+          
+          if (a < 128) {
+            data[i + 3] = 255;
+            continue;
+          }
+          
+          let nearestColor = sortedColors[0];
+          let minDistance = Infinity;
+          
+          for (const color of sortedColors) {
             const distance = Math.sqrt(
-              Math.pow(r - cr, 2) + Math.pow(g - cg, 2) + Math.pow(b - cb, 2)
+              Math.pow(r - color.r, 2) + 
+              Math.pow(g - color.g, 2) + 
+              Math.pow(b - color.b, 2)
             );
             if (distance < minDistance) {
               minDistance = distance;
               nearestColor = color;
             }
           }
+          
+          data[i] = nearestColor.r;
+          data[i + 1] = nearestColor.g;
+          data[i + 2] = nearestColor.b;
+          data[i + 3] = 255;
         }
         
-        const match = nearestColor.match(/rgb\((\d+),(\d+),(\d+)\)/);
-        if (match) {
-          data[i] = parseInt(match[1]);
-          data[i + 1] = parseInt(match[2]);
-          data[i + 2] = parseInt(match[3]);
-        }
+        offCtx.putImageData(imageData, 0, 0);
+        
+        // Scale up for display (each pixel = 12px)
+        const scale = 12;
+        const displayWidth = pixelWidth * scale;
+        const displayHeight = pixelHeight * scale;
+        
+        canvas.width = displayWidth;
+        canvas.height = displayHeight;
+        canvas.style.width = `${displayWidth}px`;
+        canvas.style.height = `${displayHeight}px`;
+        canvas.style.imageRendering = 'pixelated';
+        
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(offCanvas, 0, 0, displayWidth, displayHeight);
+        
+        setCanvasSize({ width: displayWidth, height: displayHeight });
+        
+        // Build color chart
+        const colorChart = sortedColors.map(c => ({
+          name: `RGB(${c.r},${c.g},${c.b})`,
+          rgb: [c.r, c.g, c.b] as [number, number, number],
+          count: c.count
+        }));
+        
+        setPatternResult({ colorChart, width: pixelWidth, height: pixelHeight });
+        
+      } catch (error) {
+        console.error('Processing error:', error);
+      } finally {
+        setIsProcessing(false);
       }
-      
-      ctx.putImageData(imageData, 0, 0);
-      
-      // Scale up for display
-      const displayCanvas = document.createElement('canvas');
-      const displayCtx = displayCanvas.getContext('2d')!;
-      const scale = Math.min(600 / pixelWidth, 600 / pixelHeight);
-      displayCanvas.width = pixelWidth * scale;
-      displayCanvas.height = pixelHeight * scale;
-      displayCtx.imageSmoothingEnabled = false;
-      displayCtx.drawImage(canvas, 0, 0, displayCanvas.width, displayCanvas.height);
-      
-      canvas.width = displayCanvas.width;
-      canvas.height = displayCanvas.height;
-      ctx.drawImage(displayCanvas, 0, 0);
-      
+    };
+    
+    img.onerror = () => {
+      console.error('Failed to load image');
       setIsProcessing(false);
     };
+    
     img.src = uploadedImage;
   }, [uploadedImage, gridSize, colorLimit]);
 
   // Auto-process when image is uploaded
   useEffect(() => {
     if (uploadedImage && uploadedFile) {
-      processImage();
+      // Small delay to ensure canvas is ready
+      const timer = setTimeout(() => {
+        processImage();
+      }, 100);
+      return () => clearTimeout(timer);
     }
-  }, [uploadedImage, uploadedFile]);
+  }, [uploadedImage, uploadedFile, processImage]);
 
   const brands = [
     { id: 'perler', name: 'Perler', colors: 80 },
@@ -240,6 +256,7 @@ export function ImageToPattern() {
                   setUploadedImage(null);
                   setUploadedFile(null);
                   setPatternResult(null);
+                  setCanvasSize({ width: 0, height: 0 });
                 }}
                 className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
               >
@@ -340,7 +357,7 @@ export function ImageToPattern() {
 
         {/* Right Panel - Preview */}
         <div className="lg:col-span-2">
-          <div className="bg-gray-50 rounded-2xl p-6 min-h-[400px] flex items-center justify-center">
+          <div className="bg-gray-50 rounded-2xl p-6 min-h-[400px] flex items-center justify-center overflow-auto">
             {uploadedImage ? (
               <div className="text-center">
                 {isProcessing ? (
@@ -349,11 +366,22 @@ export function ImageToPattern() {
                     <p className="text-gray-500">Processing...</p>
                   </div>
                 ) : (
-                  <canvas
-                    ref={canvasRef}
-                    className="max-w-full rounded-lg shadow-lg"
-                    style={{ imageRendering: 'pixelated' }}
-                  />
+                  <div className="inline-block">
+                    <canvas
+                      ref={canvasRef}
+                      className="rounded-lg shadow-lg border border-gray-200"
+                      style={{ 
+                        imageRendering: 'pixelated',
+                        maxWidth: '100%',
+                        maxHeight: '600px'
+                      }}
+                    />
+                    {canvasSize.width > 0 && (
+                      <p className="text-sm text-gray-500 mt-2">
+                        {patternResult?.width || gridSize} × {patternResult?.height || Math.round(gridSize * 0.75)} beads
+                      </p>
+                    )}
+                  </div>
                 )}
               </div>
             ) : (
@@ -365,18 +393,20 @@ export function ImageToPattern() {
           </div>
 
           {/* Color Chart */}
-          {patternResult?.colorChart && (
+          {patternResult?.colorChart && patternResult.colorChart.length > 0 && (
             <div className="mt-6 bg-white rounded-2xl p-6 border border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-4">Color Chart</h3>
+              <h3 className="font-semibold text-gray-900 mb-4">
+                Color Chart ({patternResult.colorChart.length} colors)
+              </h3>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 {patternResult.colorChart.map((color: any, index: number) => (
                   <div key={index} className="flex items-center space-x-2">
                     <div
-                      className="w-6 h-6 rounded border border-gray-200"
+                      className="w-6 h-6 rounded border border-gray-200 flex-shrink-0"
                       style={{ backgroundColor: `rgb(${color.rgb.join(',')})` }}
                     />
-                    <div className="text-sm">
-                      <p className="font-medium text-gray-900">{color.name}</p>
+                    <div className="text-sm min-w-0">
+                      <p className="font-medium text-gray-900 truncate">{color.name}</p>
                       <p className="text-gray-500">{color.count} beads</p>
                     </div>
                   </div>
@@ -386,7 +416,7 @@ export function ImageToPattern() {
           )}
 
           {/* Export Bar */}
-          {uploadedImage && !isProcessing && (
+          {uploadedImage && !isProcessing && canvasSize.width > 0 && (
             <div className="mt-4 flex gap-4">
               <button className="flex-1 flex items-center justify-center px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors">
                 <Download className="w-5 h-5 mr-2" />

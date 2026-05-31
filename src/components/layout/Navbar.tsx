@@ -22,7 +22,17 @@ export function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-              <Grid className="w-5 h-5 text-white" />
+              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor">
+                <rect x="2" y="2" width="4" height="4" />
+                <rect x="8" y="2" width="4" height="4" />
+                <rect x="14" y="2" width="4" height="4" />
+                <rect x="2" y="8" width="4" height="4" />
+                <rect x="8" y="8" width="4" height="4" />
+                <rect x="14" y="8" width="4" height="4" />
+                <rect x="2" y="14" width="4" height="4" />
+                <rect x="8" y="14" width="4" height="4" />
+                <rect x="14" y="14" width="4" height="4" />
+              </svg>
             </div>
             <span className="text-xl font-bold text-gray-900">PixelBeads</span>
           </Link>
