@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Upload, ArrowRight, Check } from 'lucide-react';
+import { Upload, ArrowRight, Check, ArrowLeft } from 'lucide-react';
 
 export function Guide() {
   const steps = [
@@ -53,7 +53,14 @@ export function Guide() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
+      <div className="mb-6">
+        <Link to="/" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors">
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          Back to Home
+        </Link>
+      </div>
+
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           How to Make Perler Bead Patterns from Photos

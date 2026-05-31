@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Image, Calculator, BookOpen, HelpCircle } from 'lucide-react';
+import { Menu, X, Calculator, BookOpen, HelpCircle } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { to: '/image-to-pattern', label: 'Create', icon: Image },
     { to: '/guide', label: 'Guide', icon: BookOpen },
     { to: '/calculator', label: 'Calculator', icon: Calculator },
     { to: '/faq', label: 'FAQ', icon: HelpCircle },

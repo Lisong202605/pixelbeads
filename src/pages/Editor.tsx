@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
-import { Undo, Redo, Download, ZoomIn, ZoomOut, Palette, Brush, Eraser, PaintBucket } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Undo, Redo, Download, ZoomIn, ZoomOut, Palette, Brush, Eraser, PaintBucket, ArrowLeft } from 'lucide-react';
 
 interface Cell {
   color: string | null;
@@ -232,6 +233,13 @@ export function Editor() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-64px)]">
+      <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center">
+        <Link to="/" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors text-sm">
+          <ArrowLeft className="w-4 h-4 mr-1" />
+          Back to Home
+        </Link>
+      </div>
+
       {/* Toolbar */}
       <div className="bg-white border-b border-gray-200 px-4 py-2 flex items-center justify-between flex-wrap gap-2">
         <div className="flex items-center space-x-2">
