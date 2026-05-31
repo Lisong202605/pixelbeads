@@ -252,7 +252,7 @@ export function Editor() {
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [uploadedImage, uploadedFile, processImage]);
+  }, [uploadedImage, uploadedFile]);
 
   const handleColorToggle = (colorId: string) => {
     setColors(prev => prev.map(c => 
