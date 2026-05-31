@@ -13,6 +13,7 @@ export function ImageToPattern() {
   const [patternResult, setPatternResult] = useState<any>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
+  const [processingStatus, setProcessingStatus] = useState('');
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -54,29 +55,34 @@ export function ImageToPattern() {
     }
   }, []);
 
-  // Process image - client side only (reliable)
+  // Process image - client side
   const processImage = useCallback(() => {
-    if (!uploadedImage || !canvasRef.current) return;
+    if (!uploadedImage) {
+      console.log('No uploaded image');
+      return;
+    }
     
     setIsProcessing(true);
+    setProcessingStatus('Loading image...');
+    
     const img = new Image();
-    img.crossOrigin = 'anonymous';
     
     img.onload = () => {
       try {
-        const canvas = canvasRef.current!;
-        const ctx = canvas.getContext('2d', { willReadFrequently: true })!;
+        setProcessingStatus('Processing pixels...');
         
         // Calculate pixel dimensions
         const aspectRatio = img.width / img.height;
         const pixelWidth = gridSize;
         const pixelHeight = Math.max(1, Math.round(pixelWidth / aspectRatio));
         
+        console.log(`Processing: ${pixelWidth}x${pixelHeight} pixels`);
+        
         // Create offscreen canvas for processing
         const offCanvas = document.createElement('canvas');
         offCanvas.width = pixelWidth;
         offCanvas.height = pixelHeight;
-        const offCtx = offCanvas.getContext('2d', { willReadFrequently: true })!;
+        const offCtx = offCanvas.getContext('2d')!;
         
         // Draw small version for pixelation
         offCtx.drawImage(img, 0, 0, pixelWidth, pixelHeight);
@@ -94,9 +100,8 @@ export function ImageToPattern() {
           const b = data[i + 2];
           const a = data[i + 3];
           
-          if (a < 128) continue; // Skip transparent pixels
+          if (a < 128) continue;
           
-          // Quantize to reduce colors
           const qr = Math.round(r / 32) * 32;
           const qg = Math.round(g / 32) * 32;
           const qb = Math.round(b / 32) * 32;
@@ -114,6 +119,8 @@ export function ImageToPattern() {
           .sort((a, b) => b.count - a.count)
           .slice(0, colorLimit);
         
+        console.log(`Found ${sortedColors.length} colors`);
+        
         // Map each pixel to nearest color
         for (let i = 0; i < data.length; i += 4) {
           const r = data[i];
@@ -122,6 +129,9 @@ export function ImageToPattern() {
           const a = data[i + 3];
           
           if (a < 128) {
+            data[i] = 255;
+            data[i + 1] = 255;
+            data[i + 2] = 255;
             data[i + 3] = 255;
             continue;
           }
@@ -149,10 +159,27 @@ export function ImageToPattern() {
         
         offCtx.putImageData(imageData, 0, 0);
         
-        // Scale up for display (each pixel = 12px)
-        const scale = 12;
+        // Scale up for display
+        const scale = Math.min(12, Math.floor(600 / pixelWidth));
         const displayWidth = pixelWidth * scale;
         const displayHeight = pixelHeight * scale;
+        
+        console.log(`Display size: ${displayWidth}x${displayHeight}`);
+        
+        // Get the main canvas
+        const canvas = canvasRef.current;
+        if (!canvas) {
+          console.error('Canvas ref is null');
+          setIsProcessing(false);
+          return;
+        }
+        
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          console.error('Could not get canvas context');
+          setIsProcessing(false);
+          return;
+        }
         
         canvas.width = displayWidth;
         canvas.height = displayHeight;
@@ -161,6 +188,7 @@ export function ImageToPattern() {
         canvas.style.imageRendering = 'pixelated';
         
         ctx.imageSmoothingEnabled = false;
+        ctx.clearRect(0, 0, displayWidth, displayHeight);
         ctx.drawImage(offCanvas, 0, 0, displayWidth, displayHeight);
         
         setCanvasSize({ width: displayWidth, height: displayHeight });
@@ -173,9 +201,11 @@ export function ImageToPattern() {
         }));
         
         setPatternResult({ colorChart, width: pixelWidth, height: pixelHeight });
+        setProcessingStatus('Done!');
         
       } catch (error) {
         console.error('Processing error:', error);
+        setProcessingStatus('Error processing image');
       } finally {
         setIsProcessing(false);
       }
@@ -183,6 +213,7 @@ export function ImageToPattern() {
     
     img.onerror = () => {
       console.error('Failed to load image');
+      setProcessingStatus('Failed to load image');
       setIsProcessing(false);
     };
     
@@ -192,10 +223,9 @@ export function ImageToPattern() {
   // Auto-process when image is uploaded
   useEffect(() => {
     if (uploadedImage && uploadedFile) {
-      // Small delay to ensure canvas is ready
       const timer = setTimeout(() => {
         processImage();
-      }, 100);
+      }, 300);
       return () => clearTimeout(timer);
     }
   }, [uploadedImage, uploadedFile, processImage]);
@@ -342,7 +372,7 @@ export function ImageToPattern() {
                 {isProcessing ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Processing...
+                    {processingStatus || 'Processing...'}
                   </>
                 ) : (
                   <>
@@ -363,7 +393,7 @@ export function ImageToPattern() {
                 {isProcessing ? (
                   <div>
                     <div className="animate-spin w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4" />
-                    <p className="text-gray-500">Processing...</p>
+                    <p className="text-gray-500">{processingStatus || 'Processing...'}</p>
                   </div>
                 ) : (
                   <div className="inline-block">

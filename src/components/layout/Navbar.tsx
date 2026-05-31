@@ -21,17 +21,17 @@ export function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor">
-                <rect x="2" y="2" width="4" height="4" />
-                <rect x="8" y="2" width="4" height="4" />
-                <rect x="14" y="2" width="4" height="4" />
-                <rect x="2" y="8" width="4" height="4" />
-                <rect x="8" y="8" width="4" height="4" />
-                <rect x="14" y="8" width="4" height="4" />
-                <rect x="2" y="14" width="4" height="4" />
-                <rect x="8" y="14" width="4" height="4" />
-                <rect x="14" y="14" width="4" height="4" />
+            <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
+              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="5" height="5" rx="1" />
+                <rect x="9.5" y="2" width="5" height="5" rx="1" />
+                <rect x="17" y="2" width="5" height="5" rx="1" />
+                <rect x="2" y="9.5" width="5" height="5" rx="1" />
+                <rect x="9.5" y="9.5" width="5" height="5" rx="1" />
+                <rect x="17" y="9.5" width="5" height="5" rx="1" />
+                <rect x="2" y="17" width="5" height="5" rx="1" />
+                <rect x="9.5" y="17" width="5" height="5" rx="1" />
+                <rect x="17" y="17" width="5" height="5" rx="1" />
               </svg>
             </div>
             <span className="text-xl font-bold text-gray-900">PixelBeads</span>
