@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Upload, ImageIcon, Settings, Download, Grid, Palette, X, Loader2 } from 'lucide-react';
 
 export function ImageToPattern() {
@@ -11,9 +11,7 @@ export function ImageToPattern() {
   const [dithering, setDithering] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [patternResult, setPatternResult] = useState<any>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [canvasSize, setCanvasSize] = useState({ width: 0, height: 0 });
-  const [processingStatus, setProcessingStatus] = useState('');
+  const [canvasUrl, setCanvasUrl] = useState<string | null>(null);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -55,28 +53,21 @@ export function ImageToPattern() {
     }
   }, []);
 
-  // Process image - client side
+  // Process image
   const processImage = useCallback(() => {
-    if (!uploadedImage) {
-      console.log('No uploaded image');
-      return;
-    }
+    if (!uploadedImage) return;
     
     setIsProcessing(true);
-    setProcessingStatus('Loading image...');
+    setCanvasUrl(null);
     
     const img = new Image();
     
     img.onload = () => {
       try {
-        setProcessingStatus('Processing pixels...');
-        
         // Calculate pixel dimensions
         const aspectRatio = img.width / img.height;
         const pixelWidth = gridSize;
         const pixelHeight = Math.max(1, Math.round(pixelWidth / aspectRatio));
-        
-        console.log(`Processing: ${pixelWidth}x${pixelHeight} pixels`);
         
         // Create offscreen canvas for processing
         const offCanvas = document.createElement('canvas');
@@ -84,14 +75,14 @@ export function ImageToPattern() {
         offCanvas.height = pixelHeight;
         const offCtx = offCanvas.getContext('2d')!;
         
-        // Draw small version for pixelation
+        // Draw small version
         offCtx.drawImage(img, 0, 0, pixelWidth, pixelHeight);
         
         // Get pixel data
         const imageData = offCtx.getImageData(0, 0, pixelWidth, pixelHeight);
         const data = imageData.data;
         
-        // Color quantization - collect all colors
+        // Collect colors
         const colorMap = new Map<string, {r: number, g: number, b: number, count: number}>();
         
         for (let i = 0; i < data.length; i += 4) {
@@ -119,9 +110,7 @@ export function ImageToPattern() {
           .sort((a, b) => b.count - a.count)
           .slice(0, colorLimit);
         
-        console.log(`Found ${sortedColors.length} colors`);
-        
-        // Map each pixel to nearest color
+        // Map pixels to nearest color
         for (let i = 0; i < data.length; i += 4) {
           const r = data[i];
           const g = data[i + 1];
@@ -160,38 +149,21 @@ export function ImageToPattern() {
         offCtx.putImageData(imageData, 0, 0);
         
         // Scale up for display
-        const scale = Math.min(12, Math.floor(600 / pixelWidth));
+        const scale = Math.max(4, Math.min(12, Math.floor(500 / pixelWidth)));
         const displayWidth = pixelWidth * scale;
         const displayHeight = pixelHeight * scale;
         
-        console.log(`Display size: ${displayWidth}x${displayHeight}`);
+        // Create display canvas
+        const displayCanvas = document.createElement('canvas');
+        displayCanvas.width = displayWidth;
+        displayCanvas.height = displayHeight;
+        const displayCtx = displayCanvas.getContext('2d')!;
+        displayCtx.imageSmoothingEnabled = false;
+        displayCtx.drawImage(offCanvas, 0, 0, displayWidth, displayHeight);
         
-        // Get the main canvas
-        const canvas = canvasRef.current;
-        if (!canvas) {
-          console.error('Canvas ref is null');
-          setIsProcessing(false);
-          return;
-        }
-        
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          console.error('Could not get canvas context');
-          setIsProcessing(false);
-          return;
-        }
-        
-        canvas.width = displayWidth;
-        canvas.height = displayHeight;
-        canvas.style.width = `${displayWidth}px`;
-        canvas.style.height = `${displayHeight}px`;
-        canvas.style.imageRendering = 'pixelated';
-        
-        ctx.imageSmoothingEnabled = false;
-        ctx.clearRect(0, 0, displayWidth, displayHeight);
-        ctx.drawImage(offCanvas, 0, 0, displayWidth, displayHeight);
-        
-        setCanvasSize({ width: displayWidth, height: displayHeight });
+        // Convert to data URL
+        const dataUrl = displayCanvas.toDataURL('image/png');
+        setCanvasUrl(dataUrl);
         
         // Build color chart
         const colorChart = sortedColors.map(c => ({
@@ -201,11 +173,9 @@ export function ImageToPattern() {
         }));
         
         setPatternResult({ colorChart, width: pixelWidth, height: pixelHeight });
-        setProcessingStatus('Done!');
         
       } catch (error) {
         console.error('Processing error:', error);
-        setProcessingStatus('Error processing image');
       } finally {
         setIsProcessing(false);
       }
@@ -213,7 +183,6 @@ export function ImageToPattern() {
     
     img.onerror = () => {
       console.error('Failed to load image');
-      setProcessingStatus('Failed to load image');
       setIsProcessing(false);
     };
     
@@ -225,7 +194,7 @@ export function ImageToPattern() {
     if (uploadedImage && uploadedFile) {
       const timer = setTimeout(() => {
         processImage();
-      }, 300);
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [uploadedImage, uploadedFile, processImage]);
@@ -286,7 +255,7 @@ export function ImageToPattern() {
                   setUploadedImage(null);
                   setUploadedFile(null);
                   setPatternResult(null);
-                  setCanvasSize({ width: 0, height: 0 });
+                  setCanvasUrl(null);
                 }}
                 className="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
               >
@@ -372,7 +341,7 @@ export function ImageToPattern() {
                 {isProcessing ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    {processingStatus || 'Processing...'}
+                    Processing...
                   </>
                 ) : (
                   <>
@@ -393,12 +362,13 @@ export function ImageToPattern() {
                 {isProcessing ? (
                   <div>
                     <div className="animate-spin w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4" />
-                    <p className="text-gray-500">{processingStatus || 'Processing...'}</p>
+                    <p className="text-gray-500">Processing...</p>
                   </div>
-                ) : (
+                ) : canvasUrl ? (
                   <div className="inline-block">
-                    <canvas
-                      ref={canvasRef}
+                    <img
+                      src={canvasUrl}
+                      alt="Pattern Preview"
                       className="rounded-lg shadow-lg border border-gray-200"
                       style={{ 
                         imageRendering: 'pixelated',
@@ -406,11 +376,14 @@ export function ImageToPattern() {
                         maxHeight: '600px'
                       }}
                     />
-                    {canvasSize.width > 0 && (
-                      <p className="text-sm text-gray-500 mt-2">
-                        {patternResult?.width || gridSize} × {patternResult?.height || Math.round(gridSize * 0.75)} beads
-                      </p>
-                    )}
+                    <p className="text-sm text-gray-500 mt-2">
+                      {patternResult?.width || gridSize} × {patternResult?.height || Math.round(gridSize * 0.75)} beads
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <Palette className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">Click "Generate Pattern" to create preview</p>
                   </div>
                 )}
               </div>
@@ -446,7 +419,7 @@ export function ImageToPattern() {
           )}
 
           {/* Export Bar */}
-          {uploadedImage && !isProcessing && canvasSize.width > 0 && (
+          {uploadedImage && !isProcessing && canvasUrl && (
             <div className="mt-4 flex gap-4">
               <button className="flex-1 flex items-center justify-center px-4 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors">
                 <Download className="w-5 h-5 mr-2" />

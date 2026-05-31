@@ -22,17 +22,11 @@ export function Navbar() {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
-              <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <rect x="2" y="2" width="5" height="5" rx="1" />
-                <rect x="9.5" y="2" width="5" height="5" rx="1" />
-                <rect x="17" y="2" width="5" height="5" rx="1" />
-                <rect x="2" y="9.5" width="5" height="5" rx="1" />
-                <rect x="9.5" y="9.5" width="5" height="5" rx="1" />
-                <rect x="17" y="9.5" width="5" height="5" rx="1" />
-                <rect x="2" y="17" width="5" height="5" rx="1" />
-                <rect x="9.5" y="17" width="5" height="5" rx="1" />
-                <rect x="17" y="17" width="5" height="5" rx="1" />
-              </svg>
+              <div className="grid grid-cols-3 gap-0.5">
+                {[...Array(9)].map((_, i) => (
+                  <div key={i} className="w-1.5 h-1.5 bg-white rounded-sm" />
+                ))}
+              </div>
             </div>
             <span className="text-xl font-bold text-gray-900">PixelBeads</span>
           </Link>
