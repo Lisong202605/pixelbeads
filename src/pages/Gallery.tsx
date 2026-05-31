@@ -16,14 +16,14 @@ export function Gallery() {
   ];
 
   const patterns = [
-    { id: 1, title: 'Cute Cat', category: 'animals', beads: 240, colors: 8, likes: 156, image: '/patterns/pattern1.jpg' },
-    { id: 2, title: 'Mario', category: 'gaming', beads: 480, colors: 12, likes: 234, image: '/patterns/pattern2.jpg' },
-    { id: 3, title: 'Pikachu', category: 'anime', beads: 360, colors: 6, likes: 312, image: '/patterns/pattern3.jpg' },
-    { id: 4, title: 'Sunset', category: 'nature', beads: 600, colors: 15, likes: 189, image: '/patterns/pattern4.jpg' },
-    { id: 5, title: 'Heart', category: 'cute', beads: 120, colors: 4, likes: 98, image: '/patterns/pattern5.jpg' },
-    { id: 6, title: 'Dog', category: 'animals', beads: 320, colors: 10, likes: 145, image: '/patterns/pattern6.jpg' },
-    { id: 7, title: 'Link', category: 'gaming', beads: 520, colors: 14, likes: 267, image: '/patterns/pattern7.jpg' },
-    { id: 8, title: 'Totoro', category: 'anime', beads: 420, colors: 8, likes: 298, image: '/patterns/pattern8.jpg' },
+    { id: 1, title: 'Cute Cat', category: 'animals', beads: 240, colors: 8, likes: 156, image: '/patterns/cat.png' },
+    { id: 2, title: 'Mario', category: 'gaming', beads: 480, colors: 12, likes: 234, image: '/patterns/mario.png' },
+    { id: 3, title: 'Pikachu', category: 'anime', beads: 360, colors: 6, likes: 312, image: '/patterns/pikachu.png' },
+    { id: 4, title: 'Sunset', category: 'nature', beads: 600, colors: 15, likes: 189, image: '/patterns/sunset.png' },
+    { id: 5, title: 'Heart', category: 'cute', beads: 120, colors: 4, likes: 98, image: '/patterns/heart.png' },
+    { id: 6, title: 'Dog', category: 'animals', beads: 320, colors: 10, likes: 145, image: '/patterns/dog.png' },
+    { id: 7, title: 'Link', category: 'gaming', beads: 520, colors: 14, likes: 267, image: '/patterns/link.png' },
+    { id: 8, title: 'Totoro', category: 'anime', beads: 420, colors: 8, likes: 298, image: '/patterns/totoro.png' },
   ];
 
   const filteredPatterns = patterns.filter((p) => {
@@ -79,11 +79,12 @@ export function Gallery() {
             className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all group"
           >
             {/* Pattern Preview */}
-            <div className="aspect-square bg-gray-50 flex items-center justify-center overflow-hidden">
+            <div className="aspect-square bg-gray-50 flex items-center justify-center overflow-hidden p-4">
               <img
                 src={pattern.image}
                 alt={pattern.title}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
+                style={{ imageRendering: 'pixelated' }}
                 loading="lazy"
               />
             </div>
