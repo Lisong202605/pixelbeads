@@ -1,33 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Grid, Search, Heart } from 'lucide-react';
 
-// Generate a simple pixel art pattern as SVG data URL
-function generatePatternSVG(title: string, colors: string[]) {
-  const size = 20;
-  const cellSize = 10;
-  let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${size * cellSize}" height="${size * cellSize}" viewBox="0 0 ${size * cellSize} ${size * cellSize}">`;
+// Pattern preview component
+function PatternPreview({ title, colors }: { title: string; colors: string[] }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   
-  // Background
-  svg += `<rect width="100%" height="100%" fill="#f3f4f6"/>`;
-  
-  // Generate pseudo-random pattern based on title
-  const seed = title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-  
-  for (let y = 0; y < size; y++) {
-    for (let x = 0; x < size; x++) {
-      const rand = Math.sin(seed * (x + 1) * (y + 1)) * 10000;
-      const colorIndex = Math.floor(Math.abs(rand) % colors.length);
-      
-      // Only draw some cells to create a pattern
-      if (Math.abs(rand) % 3 !== 0) {
-        svg += `<rect x="${x * cellSize}" y="${y * cellSize}" width="${cellSize}" height="${cellSize}" fill="${colors[colorIndex]}"/>`;
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d')!;
+    const size = 16;
+    const pixelSize = 12;
+    
+    canvas.width = size * pixelSize;
+    canvas.height = size * pixelSize;
+    
+    // Background
+    ctx.fillStyle = '#f9fafb';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Generate pattern
+    const seed = title.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    
+    for (let y = 0; y < size; y++) {
+      for (let x = 0; x < size; x++) {
+        const rand = Math.abs(Math.sin(seed * (x + 1) * (y + 1) * 0.1) * 10000);
+        const colorIndex = Math.floor(rand % colors.length);
+        
+        const centerX = size / 2;
+        const centerY = size / 2;
+        const distFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
+        
+        // Create pattern - more pixels in center
+        const shouldDraw = rand % 3 !== 0 || distFromCenter < size / 2.5;
+        
+        if (shouldDraw) {
+          ctx.fillStyle = colors[colorIndex];
+          ctx.fillRect(x * pixelSize, y * pixelSize, pixelSize - 1, pixelSize - 1);
+        }
       }
     }
-  }
+  }, [title, colors]);
   
-  svg += '</svg>';
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+  return (
+    <div className="w-full h-full flex items-center justify-center bg-gray-50">
+      <canvas
+        ref={canvasRef}
+        style={{ 
+          width: '100%', 
+          height: '100%',
+          imageRendering: 'pixelated',
+          objectFit: 'contain'
+        }}
+        className="max-w-[80%] max-h-[80%]"
+      />
+    </div>
+  );
 }
 
 export function Gallery() {
@@ -107,13 +137,8 @@ export function Gallery() {
             className="bg-white rounded-2xl overflow-hidden border border-gray-200 hover:shadow-lg transition-all group"
           >
             {/* Pattern Preview */}
-            <div className="aspect-square bg-gray-50 flex items-center justify-center overflow-hidden">
-              <img
-                src={generatePatternSVG(pattern.title, pattern.palette)}
-                alt={pattern.title}
-                className="w-full h-full object-contain p-4"
-                style={{ imageRendering: 'pixelated' }}
-              />
+            <div className="aspect-square">
+              <PatternPreview title={pattern.title} colors={pattern.palette} />
             </div>
 
             <div className="p-4">
