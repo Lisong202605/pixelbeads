@@ -1,8 +1,3 @@
 name = "pixelbeads"
 compatibility_date = "2026-05-31"
-
-[build]
-command = "npm run build"
-
-[site]
-bucket = "./dist"
+pages_build_output_dir = "./dist"
