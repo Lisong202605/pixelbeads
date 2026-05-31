@@ -1,13 +1,13 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Image, Grid, Calculator, Palette, Upload, ArrowRight, Settings, Download, X, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Upload, Image, Settings, Download, X, Loader2, Eye, EyeOff, ChevronDown, ChevronUp } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 
 export function Home() {
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
-  const [gridSize, setGridSize] = useState(50);
+  const [gridSize, setGridSize] = useState(80);
   const [colorLimit, setColorLimit] = useState(16);
   const [brand, setBrand] = useState('perler');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -16,6 +16,7 @@ export function Home() {
   const [showGrid, setShowGrid] = useState(true);
   const [previewScale, setPreviewScale] = useState(8);
   const [activeTab, setActiveTab] = useState<'settings' | 'colors'>('settings');
+  const [openFaq, setOpenFaq] = useState<number>(0);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -246,39 +247,99 @@ export function Home() {
     { id: 'mard', name: 'MARD', colors: 50 },
   ];
 
+  const examples = [
+    { name: 'Anime Character', colors: 15, cols: 80 },
+    { name: 'Portrait', colors: 20, cols: 120 },
+    { name: 'Cute Kitten', colors: 20, cols: 100 },
+  ];
+
+  const features = [
+    {
+      title: 'Brand Bead Palettes',
+      desc: 'Built-in Perler, Hama, Artkal & MARD color palettes for accurate bead matching.',
+    },
+    {
+      title: 'Auto Bead Counting',
+      desc: 'Automatic per-color bead count with low-usage highlighting.',
+    },
+    {
+      title: 'Pattern Export',
+      desc: 'Export bead patterns as PNG or PDF — print-ready for crafting.',
+    },
+    {
+      title: 'Manual Color Edit',
+      desc: 'Click to replace colors on canvas with full undo/redo support.',
+    },
+    {
+      title: 'Adjustable Grid',
+      desc: 'Change bead grid width, color count & dithering in real-time.',
+    },
+    {
+      title: 'Instant Processing',
+      desc: 'Web Worker + CIEDE2000 algorithm for fast, accurate color matching.',
+    },
+  ];
+
+  const steps = [
+    'Upload a photo or illustration',
+    'Pick bead brand, colors & dither style',
+    'Download bead pattern & materials list',
+  ];
+
+  const resources = [
+    { title: 'Photo to pattern', desc: 'Convert photos into printable bead grids' },
+    { title: 'Pattern generator', desc: 'Free online Perler bead generator' },
+    { title: 'Minecraft patterns', desc: 'Block-style bead pattern settings' },
+    { title: 'Pokemon patterns', desc: 'Sprite and fan-art bead ideas' },
+    { title: 'Color chart guide', desc: 'Perler, Hama, Artkal, and MARD colors' },
+    { title: 'Board size guide', desc: 'Choose the right grid before export' },
+    { title: 'Cute patterns', desc: 'Cats, hearts, charms, and gift ideas' },
+    { title: 'Perler vs Hama vs Artkal', desc: 'Choose the right bead palette' },
+  ];
+
   const faqs = [
     {
-      q: 'Is this Perler bead pattern maker free or paid?',
-      a: 'Currently free and no registration required. PixelBeads is committed to providing the best free Perler bead tool. If there are any paid plans in the future, we will notify users in advance.',
+      q: 'Is this perler bead pattern maker really free?',
+      a: 'Yes! Pixelbead is completely free with no sign-up required. We will announce before any future pricing changes.',
     },
     {
       q: 'What image formats are supported?',
       a: 'We support JPG and PNG formats up to 10MB. For best results, use images with clear subjects and good contrast.',
     },
     {
+      q: 'Can I mix different bead brands?',
+      a: 'Yes, you can select different bead brands for different projects. Each brand has its own unique color palette.',
+    },
+    {
       q: 'Can I print the bead pattern?',
       a: 'Absolutely! Export your pattern as a PDF with a complete color chart and bead count. Perfect for printing.',
+    },
+    {
+      q: 'Is my photo uploaded to a server?',
+      a: 'No. All processing happens locally in your browser. Your photos are never uploaded to any server.',
+    },
+    {
+      q: 'What makes Pixelbead different from other bead pattern makers?',
+      a: 'We use the CIEDE2000 color difference algorithm for the most accurate color matching, and support multiple bead brands.',
     },
   ];
 
   return (
     <div>
-      {/* Hero + Upload Section */}
+      {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-b from-red-50 to-white py-16 lg:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-              Free Perler Bead
-              <br />
-              <span className="text-red-500">Pattern Maker</span>
+              Free Perler Bead Pattern Maker — Photo to Bead Art
             </h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Convert photos to bead patterns instantly. No signup required.
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Drag & drop any photo to instantly create perler bead, hama bead, or fuse bead patterns. Accurate CIEDE2000 color matching with Perler, Hama, Artkal & MARD palettes.
             </p>
           </div>
 
           {/* Upload Area */}
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-3xl mx-auto">
             {!uploadedImage ? (
               <div
                 onDragOver={handleDragOver}
@@ -290,12 +351,12 @@ export function Home() {
                     : 'border-gray-300 hover:border-gray-400'
                 }`}
               >
-                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <div className="text-6xl mb-4">📷</div>
                 <p className="text-gray-600 mb-2 text-lg">Drop or click to upload</p>
                 <p className="text-sm text-gray-500 mb-4">JPG/PNG, max 10MB</p>
                 <label className="inline-flex items-center px-6 py-3 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors cursor-pointer text-base font-medium">
-                  <Image className="w-5 h-5 mr-2" />
-                  Choose File
+                  <Upload className="w-5 h-5 mr-2" />
+                  Upload & Create Pattern
                   <input
                     type="file"
                     accept="image/*"
@@ -303,6 +364,7 @@ export function Home() {
                     className="hidden"
                   />
                 </label>
+                <p className="text-xs text-gray-400 mt-3">JPG / PNG · ≤ 10MB</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -356,7 +418,7 @@ export function Home() {
                       </div>
                     ) : (
                       <div className="text-center py-12">
-                        <Palette className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                        <div className="animate-spin w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4" />
                         <p className="text-gray-500">Processing your image...</p>
                       </div>
                     )}
@@ -406,7 +468,7 @@ export function Home() {
                           : 'text-gray-500 hover:text-gray-700'
                       }`}
                     >
-                      <Palette className="w-4 h-4 inline mr-1" />
+                      <Image className="w-4 h-4 inline mr-1" />
                       Colors
                     </button>
                   </div>
@@ -439,14 +501,14 @@ export function Home() {
                           <input
                             type="range"
                             min="20"
-                            max="100"
+                            max="200"
                             value={gridSize}
                             onChange={(e) => setGridSize(Number(e.target.value))}
                             className="w-full accent-red-500"
                           />
                           <div className="flex justify-between text-xs text-gray-400 mt-1">
                             <span>20</span>
-                            <span>100</span>
+                            <span>200</span>
                           </div>
                         </div>
 
@@ -459,14 +521,14 @@ export function Home() {
                           <input
                             type="range"
                             min="4"
-                            max="32"
+                            max="64"
                             value={colorLimit}
                             onChange={(e) => setColorLimit(Number(e.target.value))}
                             className="w-full accent-red-500"
                           />
                           <div className="flex justify-between text-xs text-gray-400 mt-1">
                             <span>4</span>
-                            <span>32</span>
+                            <span>64</span>
                           </div>
                         </div>
 
@@ -520,7 +582,7 @@ export function Home() {
                             </>
                           ) : (
                             <>
-                              <Grid className="w-4 h-4 mr-2" />
+                              <Settings className="w-4 h-4 mr-2" />
                               Regenerate Pattern
                             </>
                           )}
@@ -559,7 +621,7 @@ export function Home() {
                           </div>
                         ) : (
                           <div className="text-center py-8">
-                            <Palette className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                            <Image className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                             <p className="text-gray-500 text-sm">Upload an image to see colors</p>
                           </div>
                         )}
@@ -570,120 +632,142 @@ export function Home() {
               </div>
             )}
           </div>
+
+          {/* Tags */}
+          {!uploadedImage && (
+            <div className="flex justify-center gap-4 mt-6">
+              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">100% Free</span>
+              <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-medium">No sign-up</span>
+              <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-medium">Perler / Hama / Artkal / MARD</span>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Other Tools */}
+      {/* Examples Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              More Tools
-            </h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Link
-              to="/editor"
-              className="group p-6 bg-gray-50 rounded-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="flex items-start space-x-4">
-                <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Grid className="w-7 h-7 text-green-600" />
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+            Perler Bead Pattern Examples
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {examples.map((example, index) => (
+              <div key={index} className="text-center">
+                <div className="grid grid-cols-2 gap-2 mb-4">
+                  <div className="bg-gray-100 rounded-lg aspect-square flex items-center justify-center">
+                    <span className="text-xs text-gray-400">Original Photo</span>
+                  </div>
+                  <div className="bg-gray-100 rounded-lg aspect-square flex items-center justify-center">
+                    <span className="text-xs text-gray-400">Bead Pattern</span>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
-                    Pattern Editor
-                  </h3>
-                  <p className="text-gray-600 mb-3">
-                    Create and edit bead patterns from scratch. Draw pixel by pixel.
-                  </p>
-                  <span className="inline-flex items-center text-sm font-medium text-red-500">
-                    Try it now
-                    <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            <Link
-              to="/calculator"
-              className="group p-6 bg-gray-50 rounded-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="flex items-start space-x-4">
-                <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Calculator className="w-7 h-7 text-purple-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
-                    Bead Calculator
-                  </h3>
-                  <p className="text-gray-600 mb-3">
-                    Calculate exactly how many beads you need for your project.
-                  </p>
-                  <span className="inline-flex items-center text-sm font-medium text-red-500">
-                    Try it now
-                    <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            <Link
-              to="/guide"
-              className="group p-6 bg-gray-50 rounded-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-            >
-              <div className="flex items-start space-x-4">
-                <div className="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Palette className="w-7 h-7 text-orange-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
-                    Color Guide
-                  </h3>
-                  <p className="text-gray-600 mb-3">
-                    Browse color charts for Perler, Hama, Artkal, and MARD beads.
-                  </p>
-                  <span className="inline-flex items-center text-sm font-medium text-red-500">
-                    Try it now
-                    <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="py-20 bg-gray-50">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Frequently Asked Questions
-            </h2>
-          </div>
-          <div className="space-y-4">
-            {faqs.map((faq, index) => (
-              <div key={index} className="bg-white rounded-xl p-6">
-                <h3 className="font-semibold text-gray-900 mb-2">{faq.q}</h3>
-                <p className="text-gray-600">{faq.a}</p>
+                <p className="font-semibold text-gray-900">{example.name}</p>
+                <p className="text-sm text-gray-500">{example.colors} colors / {example.cols} cols</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* About */}
+      {/* Features Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+            Bead Pattern Maker Features
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {features.map((feature, index) => (
+              <div key={index} className="bg-white rounded-xl p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-3">{feature.title}</h3>
+                <p className="text-gray-600">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Steps Section */}
       <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+            Create Bead Patterns in 3 Steps
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {steps.map((step, index) => (
+              <div key={index} className="text-center">
+                <div className="w-16 h-16 bg-red-500 text-white rounded-full flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+                  {index + 1}
+                </div>
+                <p className="text-gray-700">{step}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Resources Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+            Resources
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {resources.map((resource, index) => (
+              <Link
+                key={index}
+                to="/"
+                className="group p-4 bg-white rounded-xl hover:shadow-md transition-all"
+              >
+                <p className="font-semibold text-gray-900 group-hover:text-red-600">{resource.title}</p>
+                <p className="text-sm text-gray-500 mt-1">{resource.desc}</p>
+                <span className="text-red-500 text-sm mt-2 inline-block">-&gt;</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-12 text-center">
+            Perler Bead Pattern Maker — FAQ
+          </h2>
+          <div className="space-y-4">
+            {faqs.map((faq, index) => (
+              <div key={index} className="border border-gray-200 rounded-xl overflow-hidden">
+                <button
+                  onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
+                  className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+                >
+                  <span className="font-medium text-gray-900">{faq.q}</span>
+                  <span className="text-gray-400 ml-4">
+                    {openFaq === index ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                  </span>
+                </button>
+                {openFaq === index && (
+                  <div className="px-4 pb-4">
+                    <p className="text-gray-600">{faq.a}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              About PixelBeads
-            </h2>
-            <p className="text-gray-600 text-lg leading-relaxed">
-              PixelBeads is a free online Perler bead pattern generator designed for crafters, 
-              pixel art enthusiasts, and anyone who loves fuse beads. Our tool converts your photos 
-              into accurate bead patterns with support for multiple bead brands.
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 text-center">
+            About Pixelbead — The Free Perler Bead Pattern Generator
+          </h2>
+          <div className="space-y-4 text-gray-600 leading-relaxed">
+            <p>
+              Pixelbead is a free online perler bead pattern maker that converts any photo or illustration into accurate bead art designs. Whether you use Perler beads, Hama beads, Artkal beads, MARD beads, or other fuse beads, our tool provides brand-specific color palettes to ensure perfect color matching for your iron bead projects.
+            </p>
+            <p>
+              Our bead pattern generator uses the CIEDE2000 color difference algorithm — the most accurate color comparison method available — to match your image colors to real bead colors. All processing happens locally in your browser, meaning your photos are never uploaded to any server.
             </p>
           </div>
         </div>
