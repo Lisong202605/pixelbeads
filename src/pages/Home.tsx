@@ -114,9 +114,6 @@ export function Home() {
                 Pattern Editor
               </Link>
             </div>
-            <p className="text-sm text-gray-500">
-              Supports JPG/PNG, max 10MB. No signup required.
-            </p>
           </div>
         </div>
       </section>
