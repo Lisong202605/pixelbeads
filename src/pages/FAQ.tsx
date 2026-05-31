@@ -6,16 +6,8 @@ export function FAQ() {
 
   const faqs = [
     {
-      q: 'Is this Perler bead pattern maker really free?',
-      a: 'Yes! PixelBeads is completely free to use. No registration required, no usage limits, no watermarks. We may show ads to support the service, but all core features are free and will remain free.',
-    },
-    {
-      q: 'Do I need to register or sign up?',
-      a: 'No registration required. PixelBeads works right in your browser without any account. Just open the website and start creating patterns immediately.',
-    },
-    {
-      q: 'Will PixelBeads become paid in the future?',
-      a: 'Currently, PixelBeads is completely free and we have no immediate plans to charge. If we ever introduce premium features in the future, we will notify users 30 days in advance. All currently free features will remain free.',
+      q: 'Is this Perler bead pattern maker free or paid?',
+      a: 'Currently free and no registration required. PixelBeads is committed to providing the best free Perler bead tool. If there are any paid plans in the future, we will notify users in advance.',
     },
     {
       q: 'What image formats are supported?',
