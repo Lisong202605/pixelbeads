@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Wand2, Grid, Download, Palette, Sliders, MousePointer, Zap, ArrowRight, Upload } from 'lucide-react';
+import { Grid, Download, Palette, Sliders, MousePointer, Zap, ArrowRight, Upload } from 'lucide-react';
 
 export function Home() {
   const features = [
@@ -55,7 +55,7 @@ export function Home() {
 
   const resources = [
     { title: 'Photo to Pattern', desc: 'Convert photos into printable bead grids', to: '/image-to-pattern' },
-    { title: 'Pattern Generator', desc: 'Free online Perler bead generator', to: '/ai-generator' },
+    { title: 'Pattern Gallery', desc: 'Browse community bead patterns', to: '/gallery' },
     { title: 'Minecraft Patterns', desc: 'Block-style bead pattern settings', to: '/templates' },
     { title: 'Pokemon Patterns', desc: 'Sprite and fan-art bead ideas', to: '/gallery' },
     { title: 'Color Chart Guide', desc: 'Perler, Hama, Artkal, and MARD colors', to: '/guide' },
@@ -104,7 +104,7 @@ export function Home() {
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
               Convert photos to bead patterns instantly. Multi-brand color matching, 
-              printable templates, and AI-powered design generation.
+              printable templates, and pixel-perfect design tools.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
               <Link
@@ -115,11 +115,11 @@ export function Home() {
                 Upload & Create Pattern
               </Link>
               <Link
-                to="/ai-generator"
+                to="/editor"
                 className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-red-600 border-2 border-red-500 hover:bg-red-50 transition-colors"
               >
-                <Wand2 className="w-5 h-5 mr-2" />
-                AI Generator
+                <Grid className="w-5 h-5 mr-2" />
+                Pattern Editor
               </Link>
             </div>
             <p className="text-sm text-gray-500">

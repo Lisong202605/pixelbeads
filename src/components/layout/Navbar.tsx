@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, Image, Wand2, Grid, Calculator, BookOpen, Layout, HelpCircle } from 'lucide-react';
+import { Menu, X, Image, Grid, Calculator, BookOpen, Layout, HelpCircle } from 'lucide-react';
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
     { to: '/image-to-pattern', label: 'Create', icon: Image },
-    { to: '/ai-generator', label: 'AI Generator', icon: Wand2 },
     { to: '/gallery', label: 'Gallery', icon: Grid },
     { to: '/guide', label: 'Guide', icon: BookOpen },
     { to: '/templates', label: 'Templates', icon: Layout },

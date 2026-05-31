@@ -3,7 +3,6 @@ import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { Home } from './pages/Home';
 import { ImageToPattern } from './pages/ImageToPattern';
-import { AIGenerator } from './pages/AIGenerator';
 import { Gallery } from './pages/Gallery';
 import { PatternDetail } from './pages/PatternDetail';
 import { Editor } from './pages/Editor';
@@ -24,7 +23,6 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/image-to-pattern" element={<ImageToPattern />} />
-            <Route path="/ai-generator" element={<AIGenerator />} />
             <Route path="/gallery" element={<Gallery />} />
             <Route path="/pattern/:id" element={<PatternDetail />} />
             <Route path="/editor" element={<Editor />} />
