@@ -1,55 +1,43 @@
 import { Link } from 'react-router-dom';
-import { Grid, Download, Palette, Sliders, MousePointer, Zap, Upload } from 'lucide-react';
+import { Image, Grid, Calculator, Palette, Upload, ArrowRight } from 'lucide-react';
 
 export function Home() {
-  const features = [
+  const mainFeatures = [
     {
-      icon: Palette,
-      title: 'Brand Bead Palettes',
-      description: 'Match colors with Perler, Hama, Artkal, and MARD bead palettes automatically.',
+      icon: Image,
+      title: 'Photo to Pattern',
+      description: 'Upload any photo and convert it into a pixel-perfect Perler bead pattern. Supports JPG and PNG up to 10MB.',
+      to: '/image-to-pattern',
+      color: 'bg-blue-500',
+      iconBg: 'bg-blue-100',
+      iconColor: 'text-blue-600',
     },
     {
       icon: Grid,
-      title: 'Auto Bead Counting',
-      description: 'Get exact bead counts for each color. Know exactly how many beads you need.',
+      title: 'Pattern Editor',
+      description: 'Create and edit bead patterns from scratch. Draw pixel by pixel with our easy-to-use grid editor.',
+      to: '/editor',
+      color: 'bg-green-500',
+      iconBg: 'bg-green-100',
+      iconColor: 'text-green-600',
     },
     {
-      icon: Download,
-      title: 'Pattern Export',
-      description: 'Export as PDF or PNG. Print-ready templates with color charts.',
+      icon: Calculator,
+      title: 'Bead Calculator',
+      description: 'Calculate exactly how many beads you need for your project. Choose board size and get bead counts.',
+      to: '/calculator',
+      color: 'bg-purple-500',
+      iconBg: 'bg-purple-100',
+      iconColor: 'text-purple-600',
     },
     {
-      icon: MousePointer,
-      title: 'Manual Color Edit',
-      description: 'Click any bead to change its color. Fine-tune your pattern pixel by pixel.',
-    },
-    {
-      icon: Sliders,
-      title: 'Adjustable Grid',
-      description: 'Choose grid size from 20 to 100+ columns. More columns = more detail.',
-    },
-    {
-      icon: Zap,
-      title: 'Instant Processing',
-      description: 'Your image is processed in seconds using advanced color matching algorithms.',
-    },
-  ];
-
-  const steps = [
-    {
-      number: '01',
-      title: 'Upload Your Image',
-      description: 'Drag and drop or click to upload JPG/PNG up to 10MB.',
-    },
-    {
-      number: '02',
-      title: 'Customize Settings',
-      description: 'Choose bead brand, grid size, color limit, and dithering options.',
-    },
-    {
-      number: '03',
-      title: 'Export & Create',
-      description: 'Download your pattern as PDF with color chart and start beading!',
+      icon: Palette,
+      title: 'Color Guide',
+      description: 'Browse color charts for Perler, Hama, Artkal, and MARD beads. Find the perfect match for your project.',
+      to: '/guide',
+      color: 'bg-orange-500',
+      iconBg: 'bg-orange-100',
+      iconColor: 'text-orange-600',
     },
   ];
 
@@ -61,10 +49,6 @@ export function Home() {
     {
       q: 'What image formats are supported?',
       a: 'We support JPG and PNG formats up to 10MB. For best results, use images with clear subjects and good contrast.',
-    },
-    {
-      q: 'Can I mix different bead brands?',
-      a: 'Currently, you can choose one bead brand per pattern. We support Perler, Hama, Artkal, and MARD palettes.',
     },
     {
       q: 'Can I print the bead pattern?',
@@ -84,53 +68,55 @@ export function Home() {
               <span className="text-red-500">Pattern Maker</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Convert photos to bead patterns instantly. Multi-brand color matching, 
-              printable templates, and pixel-perfect design tools.
+              Convert photos to bead patterns instantly. No signup required.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-              <Link
-                to="/image-to-pattern"
-                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-white bg-red-500 hover:bg-red-600 transition-colors shadow-lg shadow-red-500/25"
-              >
-                <Upload className="w-5 h-5 mr-2" />
-                Upload & Create Pattern
-              </Link>
-              <Link
-                to="/editor"
-                className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-red-600 border-2 border-red-500 hover:bg-red-50 transition-colors"
-              >
-                <Grid className="w-5 h-5 mr-2" />
-                Pattern Editor
-              </Link>
-            </div>
+            <Link
+              to="/image-to-pattern"
+              className="inline-flex items-center justify-center px-8 py-4 text-base font-medium rounded-xl text-white bg-red-500 hover:bg-red-600 transition-colors shadow-lg shadow-red-500/25"
+            >
+              <Upload className="w-5 h-5 mr-2" />
+              Upload & Create Pattern
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Main Features - 4 Core Tools */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Bead Pattern Maker Features
+              Our Tools
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Everything you need to create perfect Perler bead patterns
+              Everything you need to create beautiful Perler bead patterns
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {features.map((feature) => (
-              <div
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {mainFeatures.map((feature) => (
+              <Link
                 key={feature.title}
+                to={feature.to}
                 className="group p-6 bg-gray-50 rounded-2xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-red-200 transition-colors"
-                >
-                  <feature.icon className="w-6 h-6 text-red-600" />
+                <div className="flex items-start space-x-4">
+                  <div className={`w-14 h-14 ${feature.iconBg} rounded-xl flex items-center justify-center flex-shrink-0`}>
+                    <feature.icon className={`w-7 h-7 ${feature.iconColor}`} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-red-600 transition-colors">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-600 mb-3">
+                      {feature.description}
+                    </p>
+                    <span className="inline-flex items-center text-sm font-medium text-red-500">
+                      Try it now
+                      <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">{feature.title}</h3>
-                <p className="text-gray-600">{feature.description}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -141,17 +127,31 @@ export function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Create Bead Patterns in 3 Steps
+              How It Works
             </h2>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {steps.map((step) => (
-              <div key={step.number} className="text-center">
-                <div className="text-5xl font-bold text-red-200 mb-4">{step.number}</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{step.title}</h3>
-                <p className="text-gray-600">{step.description}</p>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Upload className="w-8 h-8 text-red-600" />
               </div>
-            ))}
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">1. Upload Photo</h3>
+              <p className="text-gray-600">Choose any JPG or PNG image up to 10MB</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Palette className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">2. Customize</h3>
+              <p className="text-gray-600">Select bead brand, grid size, and colors</p>
+            </div>
+            <div className="text-center">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Image className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">3. Export</h3>
+              <p className="text-gray-600">Download as PDF or PNG with color chart</p>
+            </div>
           </div>
         </div>
       </section>
@@ -184,9 +184,8 @@ export function Home() {
             </h2>
             <p className="text-gray-600 text-lg leading-relaxed">
               PixelBeads is a free online Perler bead pattern generator designed for crafters, 
-              pixel art enthusiasts, and anyone who loves fuse beads. Our tool uses advanced 
-              color matching algorithms to convert your photos into accurate bead patterns 
-              with support for multiple bead brands including Perler, Hama, Artkal, and MARD.
+              pixel art enthusiasts, and anyone who loves fuse beads. Our tool converts your photos 
+              into accurate bead patterns with support for multiple bead brands.
             </p>
           </div>
         </div>
