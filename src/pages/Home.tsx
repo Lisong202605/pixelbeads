@@ -55,9 +55,7 @@ export function Home() {
 
   const resources = [
     { title: 'Photo to Pattern', desc: 'Convert photos into printable bead grids', to: '/image-to-pattern' },
-    { title: 'Pattern Gallery', desc: 'Browse community bead patterns', to: '/gallery' },
     { title: 'Minecraft Patterns', desc: 'Block-style bead pattern settings', to: '/templates' },
-    { title: 'Pokemon Patterns', desc: 'Sprite and fan-art bead ideas', to: '/gallery' },
     { title: 'Color Chart Guide', desc: 'Perler, Hama, Artkal, and MARD colors', to: '/guide' },
     { title: 'Board Size Guide', desc: 'Choose the right grid before export', to: '/calculator' },
     { title: 'Cute Patterns', desc: 'Cats, hearts, charms, and gift ideas', to: '/templates' },
