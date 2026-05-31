@@ -347,7 +347,7 @@ export function Editor() {
               </div>
 
               {/* Canvas */}
-              <div className="flex items-center justify-center min-h-[400px] bg-gray-50 rounded-lg">
+              <div className="flex items-center justify-center min-h-[400px] bg-gray-50 rounded-lg overflow-hidden">
                 {!uploadedImage ? (
                   <div className="text-center py-12">
                     <Upload className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -369,17 +369,28 @@ export function Editor() {
                     <p className="text-gray-500">处理中...</p>
                   </div>
                 ) : canvasUrl ? (
-                  <div className="overflow-auto max-h-[600px]">
-                    <img
-                      src={canvasUrl}
-                      alt="Pattern"
-                      className="mx-auto"
+                  <div 
+                    className="overflow-auto max-h-[600px] w-full flex items-center justify-center"
+                    style={{ 
+                      cursor: paintMode ? 'crosshair' : 'grab',
+                    }}
+                  >
+                    <div
                       style={{
-                        imageRendering: 'pixelated',
                         transform: `scale(${zoom})`,
-                        transformOrigin: 'center',
+                        transformOrigin: 'center center',
+                        transition: 'transform 0.2s ease-out',
                       }}
-                    />
+                    >
+                      <img
+                        src={canvasUrl}
+                        alt="Pattern"
+                        className="mx-auto"
+                        style={{
+                          imageRendering: 'pixelated',
+                        }}
+                      />
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-12">
