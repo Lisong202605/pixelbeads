@@ -67,7 +67,15 @@ export function Home() {
   const faqs = [
     {
       q: 'Is this Perler bead pattern maker really free?',
-      a: 'Yes! PixelBeads is completely free to use. You can convert unlimited images to bead patterns without any cost.',
+      a: 'Yes! PixelBeads is completely free to use. No registration required, no usage limits, no watermarks. We may show ads to support the service, but all core features are free and will remain free.',
+    },
+    {
+      q: 'Do I need to register or sign up?',
+      a: 'No registration required. PixelBeads works right in your browser without any account. Just open the website and start creating patterns immediately.',
+    },
+    {
+      q: 'Will PixelBeads become paid in the future?',
+      a: 'Currently, PixelBeads is completely free and we have no immediate plans to charge. If we ever introduce premium features in the future, we will notify users 30 days in advance. All currently free features will remain free.',
     },
     {
       q: 'What image formats are supported?',
@@ -80,14 +88,6 @@ export function Home() {
     {
       q: 'Can I print the bead pattern?',
       a: 'Absolutely! Export your pattern as a PDF with a complete color chart and bead count. Perfect for printing.',
-    },
-    {
-      q: 'Is my photo uploaded to a server?',
-      a: 'No. All image processing happens in your browser. Your photos never leave your device, ensuring complete privacy.',
-    },
-    {
-      q: 'What makes PixelBeads different?',
-      a: 'We use the CIEDE2000 color matching algorithm for accurate brand color matching, support multiple bead brands, and process everything locally for privacy.',
     },
   ];
 

@@ -7,7 +7,15 @@ export function FAQ() {
   const faqs = [
     {
       q: 'Is this Perler bead pattern maker really free?',
-      a: 'Yes! PixelBeads is completely free to use. You can convert unlimited images to bead patterns without any cost. We may show ads to support the service, but all core features are free.',
+      a: 'Yes! PixelBeads is completely free to use. No registration required, no usage limits, no watermarks. We may show ads to support the service, but all core features are free and will remain free.',
+    },
+    {
+      q: 'Do I need to register or sign up?',
+      a: 'No registration required. PixelBeads works right in your browser without any account. Just open the website and start creating patterns immediately.',
+    },
+    {
+      q: 'Will PixelBeads become paid in the future?',
+      a: 'Currently, PixelBeads is completely free and we have no immediate plans to charge. If we ever introduce premium features in the future, we will notify users 30 days in advance. All currently free features will remain free.',
     },
     {
       q: 'What image formats are supported?',
@@ -27,7 +35,7 @@ export function FAQ() {
     },
     {
       q: 'What makes PixelBeads different from other bead pattern makers?',
-      a: 'We use the CIEDE2000 color matching algorithm for the most accurate brand color matching. We support multiple bead brands, process everything locally for privacy, and offer AI-powered pattern generation.',
+      a: 'We use the CIEDE2000 color matching algorithm for the most accurate brand color matching. We support multiple bead brands, process everything locally for privacy, and offer a fully functional pattern editor.',
     },
     {
       q: 'How accurate is the color matching?',
@@ -48,7 +56,7 @@ export function FAQ() {
   ];
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-24">
       <div className="text-center mb-12">
         <HelpCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
