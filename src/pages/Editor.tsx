@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Upload, ArrowLeft, RotateCcw } from 'lucide-react';
+import { Upload, ArrowLeft, RotateCcw, ChevronDown, Settings } from 'lucide-react';
 
 interface ColorInfo {
   id: string;
@@ -41,6 +41,10 @@ export function Editor() {
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [history, setHistory] = useState<any[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
+
+  // Dropdown menu
+  const [showViewMenu, setShowViewMenu] = useState(false);
+  const viewMenuRef = useRef<HTMLDivElement>(null);
 
   const brands = [
     { id: 'perler', name: 'Perler', type: '硬质' },
@@ -254,6 +258,17 @@ export function Editor() {
     }
   }, [uploadedImage, uploadedFile]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (viewMenuRef.current && !viewMenuRef.current.contains(event.target as Node)) {
+        setShowViewMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleColorToggle = (colorId: string) => {
     setColors(prev => prev.map(c => 
       c.id === colorId ? { ...c, enabled: !c.enabled } : c
@@ -306,104 +321,10 @@ export function Editor() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left: Canvas Area */}
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl border border-gray-200 p-4">
-              {/* Toolbar */}
-              <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">视图缩放</span>
-                    <input
-                      type="range"
-                      min="0.5"
-                      max="3"
-                      step="0.1"
-                      value={zoom}
-                      onChange={(e) => setZoom(Number(e.target.value))}
-                      className="w-24 accent-red-500"
-                    />
-                    <span className="text-sm text-gray-500">{zoom.toFixed(1)}x</span>
-                  </div>
-                  <button
-                    onClick={() => setZoom(1)}
-                    className="text-sm text-gray-600 hover:text-red-500 transition-colors"
-                  >
-                    <RotateCcw className="w-4 h-4 inline mr-1" />
-                    重置视角
-                  </button>
-                  <label className="flex items-center space-x-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={showGrid}
-                      onChange={(e) => setShowGrid(e.target.checked)}
-                      className="rounded border-gray-300 text-red-500 focus:ring-red-500"
-                    />
-                    <span className="text-sm text-gray-600">显示网格</span>
-                  </label>
-                </div>
-              </div>
-
-              {/* Canvas */}
-              <div className="flex items-center justify-center min-h-[400px] bg-gray-50 rounded-lg overflow-hidden">
-                {!uploadedImage ? (
-                  <div className="text-center py-12">
-                    <Upload className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                    <p className="text-gray-500">请上传一张图片开始生成图纸</p>
-                    <label className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors cursor-pointer text-sm font-medium mt-4">
-                      <Upload className="w-4 h-4 mr-2" />
-                      选择图片
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleFileSelect}
-                        className="hidden"
-                      />
-                    </label>
-                  </div>
-                ) : isProcessing ? (
-                  <div className="text-center py-12">
-                    <div className="animate-spin w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4" />
-                    <p className="text-gray-500">处理中...</p>
-                  </div>
-                ) : canvasUrl ? (
-                  <div 
-                    className="overflow-auto max-h-[600px] w-full flex items-center justify-center"
-                    style={{ 
-                      cursor: paintMode ? 'crosshair' : 'grab',
-                    }}
-                  >
-                    <div
-                      style={{
-                        transform: `scale(${zoom})`,
-                        transformOrigin: 'center center',
-                        transition: 'transform 0.2s ease-out',
-                      }}
-                    >
-                      <img
-                        src={canvasUrl}
-                        alt="Pattern"
-                        className="mx-auto"
-                        style={{
-                          imageRendering: 'pixelated',
-                        }}
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <div className="animate-spin w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4" />
-                    <p className="text-gray-500">正在生成图纸...</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Settings Panel */}
-          <div className="space-y-4">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Left: Settings Panel (now on left) */}
+          <div className="space-y-4 lg:col-span-1">
             {/* Basic Parameters */}
             <div className="bg-white rounded-xl border border-gray-200 p-4">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">基础参数</h2>
@@ -647,6 +568,128 @@ export function Editor() {
                   </p>
                 </div>
               )}
+            </div>
+          </div>
+
+          {/* Right: Canvas Area (now on right, larger) */}
+          <div className="lg:col-span-3">
+            <div className="bg-white rounded-xl border border-gray-200 p-4 h-full flex flex-col">
+              {/* Toolbar - Single row with dropdown */}
+              <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-100">
+                <div className="flex items-center space-x-4">
+                  {/* View Dropdown Menu */}
+                  <div className="relative" ref={viewMenuRef}>
+                    <button
+                      onClick={() => setShowViewMenu(!showViewMenu)}
+                      className="flex items-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition-colors"
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span>视图选项</span>
+                      <ChevronDown className="w-4 h-4" />
+                    </button>
+                    
+                    {showViewMenu && (
+                      <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 p-4 z-50">
+                        <div className="space-y-4">
+                          {/* Zoom */}
+                          <div>
+                            <div className="flex justify-between mb-1">
+                              <span className="text-sm text-gray-700">视图缩放</span>
+                              <span className="text-sm text-gray-500">{zoom.toFixed(1)}x</span>
+                            </div>
+                            <input
+                              type="range"
+                              min="0.5"
+                              max="3"
+                              step="0.1"
+                              value={zoom}
+                              onChange={(e) => setZoom(Number(e.target.value))}
+                              className="w-full accent-red-500"
+                            />
+                          </div>
+                          
+                          {/* Reset View */}
+                          <button
+                            onClick={() => {
+                              setZoom(1);
+                              setShowViewMenu(false);
+                            }}
+                            className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm text-gray-700 transition-colors"
+                          >
+                            <RotateCcw className="w-4 h-4" />
+                            <span>重置视角</span>
+                          </button>
+                          
+                          {/* Show Grid */}
+                          <label className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={showGrid}
+                              onChange={(e) => setShowGrid(e.target.checked)}
+                              className="rounded border-gray-300 text-red-500 focus:ring-red-500"
+                            />
+                            <span className="text-sm text-gray-700">显示网格</span>
+                          </label>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Canvas - Full height */}
+              <div className="flex-1 flex items-center justify-center min-h-[600px] bg-gray-50 rounded-lg overflow-hidden">
+                {!uploadedImage ? (
+                  <div className="text-center py-12">
+                    <Upload className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                    <p className="text-gray-500">请上传一张图片开始生成图纸</p>
+                    <label className="inline-flex items-center px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors cursor-pointer text-sm font-medium mt-4">
+                      <Upload className="w-4 h-4 mr-2" />
+                      选择图片
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleFileSelect}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                ) : isProcessing ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4" />
+                    <p className="text-gray-500">处理中...</p>
+                  </div>
+                ) : canvasUrl ? (
+                  <div 
+                    className="overflow-auto w-full h-full flex items-center justify-center"
+                    style={{ 
+                      cursor: paintMode ? 'crosshair' : 'grab',
+                    }}
+                  >
+                    <div
+                      style={{
+                        transform: `scale(${zoom})`,
+                        transformOrigin: 'center center',
+                        transition: 'transform 0.2s ease-out',
+                      }}
+                    >
+                      <img
+                        src={canvasUrl}
+                        alt="Pattern"
+                        className="mx-auto"
+                        style={{
+                          imageRendering: 'pixelated',
+                        }}
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <div className="animate-spin w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full mx-auto mb-4" />
+                    <p className="text-gray-500">正在生成图纸...</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
