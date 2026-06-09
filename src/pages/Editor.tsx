@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Upload, ArrowLeft, RotateCcw, ChevronDown, Settings } from 'lucide-react';
 
@@ -11,9 +11,19 @@ interface ColorInfo {
   enabled: boolean;
 }
 
+interface HistoryEntry {
+  canvasUrl: string;
+  colors: ColorInfo[];
+}
+
 export function Editor() {
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [uploadedImage, setUploadedImage] = useState<string | null>(() => {
+    const storedImage = sessionStorage.getItem('uploadedImage');
+    if (storedImage) {
+      sessionStorage.removeItem('uploadedImage');
+    }
+    return storedImage;
+  });
   const [isProcessing, setIsProcessing] = useState(false);
   const [canvasUrl, setCanvasUrl] = useState<string | null>(null);
 
@@ -39,12 +49,13 @@ export function Editor() {
   // Manual paint
   const [paintMode, setPaintMode] = useState(false);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
-  const [history, setHistory] = useState<any[]>([]);
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
   // Dropdown menu
   const [showViewMenu, setShowViewMenu] = useState(false);
   const viewMenuRef = useRef<HTMLDivElement>(null);
+  const processingKeyRef = useRef<string>('');
 
   const brands = [
     { id: 'perler', name: 'Perler', type: '硬质' },
@@ -62,7 +73,7 @@ export function Editor() {
   ];
 
   // Perler color palette (sample)
-  const perlerColors: ColorInfo[] = [
+  const perlerColors = useMemo<ColorInfo[]>(() => [
     { id: 'P01', code: '80-15179', name: 'Evergreen', rgb: [0, 128, 0], count: 0, enabled: true },
     { id: 'P02', code: '80-15181', name: 'Light Grey', rgb: [200, 200, 200], count: 0, enabled: true },
     { id: 'P03', code: '80-15182', name: '薰衣草', rgb: [200, 150, 200], count: 0, enabled: true },
@@ -103,13 +114,12 @@ export function Editor() {
     { id: 'P38', code: '80-19017', name: '灰', rgb: [150, 150, 150], count: 0, enabled: true },
     { id: 'P39', code: '80-19018', name: '黑', rgb: [30, 30, 30], count: 0, enabled: true },
     { id: 'P40', code: '80-19020', name: '铁锈红', rgb: [180, 60, 30], count: 0, enabled: true },
-  ];
+  ], []);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       const file = files[0];
-      setUploadedFile(file);
       const reader = new FileReader();
       reader.onload = (event) => {
         setUploadedImage(event.target?.result as string);
@@ -250,13 +260,19 @@ export function Editor() {
   }, [uploadedImage, gridWidth, maxColors, showGrid, perlerColors, history, historyIndex]);
 
   useEffect(() => {
-    if (uploadedImage && uploadedFile) {
+    if (uploadedImage) {
+      const processingKey = `${uploadedImage.length}:${gridWidth}:${maxColors}:${showGrid}`;
+      if (processingKeyRef.current === processingKey) {
+        return;
+      }
+      processingKeyRef.current = processingKey;
+
       const timer = setTimeout(() => {
         processImage();
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [uploadedImage, uploadedFile]);
+  }, [uploadedImage, gridWidth, maxColors, showGrid, processImage]);
 
   // Close dropdown when clicking outside
   useEffect(() => {

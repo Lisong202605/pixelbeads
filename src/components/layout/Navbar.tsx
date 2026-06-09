@@ -1,72 +1,87 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, X, Calculator, BookOpen, HelpCircle } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Menu, X } from 'lucide-react';
+
+const navLinks = [
+  { to: '/', label: 'Home' },
+  { to: '/gallery', label: 'Gallery' },
+  { to: '/guide', label: 'Guide' },
+  { to: '/templates', label: 'Templates' },
+  { to: '/faq', label: 'FAQ' },
+];
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
-  const navLinks = [
-    { to: '/guide', label: 'Guide', icon: BookOpen },
-    { to: '/calculator', label: 'Calculator', icon: Calculator },
-    { to: '/faq', label: 'FAQ', icon: HelpCircle },
-  ];
+  const isActive = (path: string) => {
+    if (path === '/') {
+      return location.pathname === '/' || location.pathname === '/image-to-pattern';
+    }
+    return location.pathname === path;
+  };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center flex-shrink-0">
-              <div className="grid grid-cols-3 gap-0.5">
-                {[...Array(9)].map((_, i) => (
-                  <div key={i} className="w-1.5 h-1.5 bg-white rounded-sm" />
-                ))}
-              </div>
+    <nav className="craft-nav fixed top-0 left-0 right-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <Link to="/" className="text-lg font-bold tracking-tight text-[#e8e6e3] flex items-center gap-2">
+          <div className="w-7 h-7 bg-[#d4a574] rounded flex items-center justify-center">
+            <div className="grid grid-cols-2 gap-1">
+              <span className="w-1.5 h-1.5 bg-[#1a1a1a] rounded-sm" />
+              <span className="w-1.5 h-1.5 bg-[#1a1a1a] rounded-sm" />
+              <span className="w-1.5 h-1.5 bg-[#1a1a1a] rounded-sm" />
+              <span className="w-1.5 h-1.5 bg-[#1a1a1a] rounded-sm" />
             </div>
-            <span className="text-xl font-bold text-gray-900">PixelBeads</span>
-          </Link>
-
-          {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center space-x-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="flex items-center space-x-1 px-3 py-2 rounded-md text-sm font-medium text-gray-700 hover:text-red-500 hover:bg-gray-100 transition-colors"
-              >
-                <link.icon className="w-4 h-4" />
-                <span>{link.label}</span>
-              </Link>
-            ))}
           </div>
+          PIXELBEADS
+        </Link>
 
-          {/* Mobile Menu Button */}
-          <button
-            className="lg:hidden p-2 rounded-md text-gray-700 hover:bg-gray-100"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+        <div className="hidden md:flex items-center gap-1">
+          {navLinks.map((link, index) => (
+            <div key={link.to} className="flex items-center gap-1">
+              {index === 1 && <span className="w-px h-4 bg-[#3a3a3a] mx-1" />}
+              <Link
+                to={link.to}
+                className={`px-3 py-1.5 text-sm rounded-md transition-all ${
+                  isActive(link.to)
+                    ? 'text-[#d4a574] bg-[#d4a574]/10'
+                    : 'text-[#6b6560] hover:text-[#e8e6e3] hover:bg-[#ffffff08]'
+                }`}
+              >
+                {link.label}
+              </Link>
+            </div>
+          ))}
         </div>
 
-        {/* Mobile Nav */}
-        {isOpen && (
-          <div className="lg:hidden py-2 border-t border-gray-200">
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                className="flex items-center space-x-2 px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-red-500 hover:bg-gray-100"
-                onClick={() => setIsOpen(false)}
-              >
-                <link.icon className="w-5 h-5" />
-                <span>{link.label}</span>
-              </Link>
-            ))}
-          </div>
-        )}
+        <button
+          type="button"
+          className="md:hidden p-2 rounded-md text-[#a09b94] hover:text-[#e8e6e3] hover:bg-[#ffffff08]"
+          onClick={() => setIsOpen((open) => !open)}
+          aria-label="Toggle navigation"
+        >
+          {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
       </div>
+
+      {isOpen && (
+        <div className="md:hidden bg-[#1a1a1a] border-t border-[#3a3a3a] px-4 py-3 space-y-1">
+          {navLinks.map((link) => (
+            <Link
+              key={link.to}
+              to={link.to}
+              className={`block px-3 py-2 text-sm rounded-md ${
+                isActive(link.to)
+                  ? 'text-[#d4a574] bg-[#d4a574]/10'
+                  : 'text-[#6b6560] hover:text-[#e8e6e3]'
+              }`}
+              onClick={() => setIsOpen(false)}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </nav>
   );
 }

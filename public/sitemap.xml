@@ -7,37 +7,52 @@
   </url>
   <url>
     <loc>https://pixelbeads.design/image-to-pattern</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-10</lastmod>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://pixelbeads.design/ai-generator</loc>
-    <lastmod>2026-05-31</lastmod>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>https://pixelbeads.design/patterns</loc>
-    <lastmod>2026-05-31</lastmod>
+    <loc>https://pixelbeads.design/editor</loc>
+    <lastmod>2026-06-10</lastmod>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://pixelbeads.design/gallery</loc>
+    <lastmod>2026-06-10</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://pixelbeads.design/templates</loc>
+    <lastmod>2026-06-10</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pixelbeads.design/guide</loc>
+    <lastmod>2026-06-10</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://pixelbeads.design/faq</loc>
+    <lastmod>2026-06-10</lastmod>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://pixelbeads.design/calculator</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-10</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://pixelbeads.design/about</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-10</lastmod>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>https://pixelbeads.design/privacy</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-10</lastmod>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://pixelbeads.design/terms</loc>
-    <lastmod>2026-05-31</lastmod>
+    <lastmod>2026-06-10</lastmod>
     <priority>0.3</priority>
   </url>
 </urlset>
