@@ -135,7 +135,7 @@ export function Guide() {
         <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to try it yourself?</h2>
         <p className="text-gray-600 mb-6">Convert your first photo to a bead pattern in seconds.</p>
         <Link
-          to="/image-to-pattern"
+          to="/image-to-pattern/"
           className="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-xl text-white bg-red-500 hover:bg-red-600 transition-colors"
         >
           <Upload className="w-5 h-5 mr-2" />

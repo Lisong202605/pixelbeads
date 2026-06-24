@@ -4,10 +4,10 @@ import { Menu, X } from 'lucide-react';
 
 const navLinks = [
   { to: '/', label: 'Home' },
-  { to: '/gallery', label: 'Gallery' },
-  { to: '/guide', label: 'Guide' },
-  { to: '/templates', label: 'Templates' },
-  { to: '/faq', label: 'FAQ' },
+  { to: '/gallery/', label: 'Gallery' },
+  { to: '/guide/', label: 'Guide' },
+  { to: '/templates/', label: 'Templates' },
+  { to: '/faq/', label: 'FAQ' },
 ];
 
 export function Navbar() {
@@ -15,10 +15,11 @@ export function Navbar() {
   const location = useLocation();
 
   const isActive = (path: string) => {
+    const current = location.pathname.endsWith('/') ? location.pathname : `${location.pathname}/`;
     if (path === '/') {
-      return location.pathname === '/' || location.pathname === '/image-to-pattern';
+      return location.pathname === '/' || current === '/image-to-pattern/';
     }
-    return location.pathname === path;
+    return current === path;
   };
 
   return (

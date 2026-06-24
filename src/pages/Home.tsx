@@ -105,7 +105,7 @@ function UploadBox() {
         const result = event.target?.result;
         if (typeof result === 'string') {
           sessionStorage.setItem('uploadedImage', result);
-          navigate('/editor');
+          navigate('/editor/');
         }
       };
       reader.readAsDataURL(file);

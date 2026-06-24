@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom';
 
 const footerLinks = [
-  { to: '/privacy', label: 'Privacy Policy' },
-  { to: '/terms', label: 'Terms of Service' },
-  { to: '/guide', label: 'Beginner Guide' },
-  { to: '/templates', label: 'Templates' },
-  { to: '/faq', label: 'FAQ' },
-  { to: '/contact', label: 'Contact' },
+  { to: '/privacy/', label: 'Privacy Policy' },
+  { to: '/terms/', label: 'Terms of Service' },
+  { to: '/guide/', label: 'Beginner Guide' },
+  { to: '/templates/', label: 'Templates' },
+  { to: '/faq/', label: 'FAQ' },
+  { to: '/contact/', label: 'Contact' },
 ];
 
 export function Footer() {
@@ -26,7 +26,7 @@ export function Footer() {
         </div>
         <div className="craft-divider mb-4" />
         <p className="text-center text-xs text-[#6b6560] tracking-wide">
-          © 2026 PixelBeads. Free Perler bead pattern maker.
+          (c) 2026 PixelBeads. Free Perler bead pattern maker.
         </p>
       </div>
     </footer>
