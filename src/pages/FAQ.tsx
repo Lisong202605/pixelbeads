@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { ArrowRight, ChevronDown, HelpCircle, Lock, Palette, Printer, Sparkles } from 'lucide-react';
 
 export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
@@ -43,47 +44,97 @@ export function FAQ() {
     },
     {
       q: 'Can I save my patterns?',
-      a: 'Currently, patterns are saved in your browser\'s local storage. We recommend exporting your patterns as PDF or PNG to keep them permanently.',
+      a: "Currently, patterns are saved in your browser's local storage. We recommend exporting your patterns as PDF or PNG to keep them permanently.",
     },
   ];
 
-  return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 pb-24">
-      <div className="text-center mb-12">
-        <HelpCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Frequently Asked Questions
-        </h1>
-        <p className="text-gray-600 text-lg">
-          Everything you need to know about PixelBeads
-        </p>
-      </div>
+  const highlights = [
+    { icon: Lock, title: 'Private by default', text: 'Photo processing happens in your browser.' },
+    { icon: Palette, title: 'Real bead palettes', text: 'Perler, Hama, Artkal, and MARD colors.' },
+    { icon: Printer, title: 'Print-ready export', text: 'PDF patterns include chart and bead counts.' },
+  ];
 
-      <div className="space-y-4">
-        {faqs.map((faq, index) => (
-          <div
-            key={index}
-            className="bg-white rounded-xl border border-gray-200 overflow-hidden"
-          >
-            <button
-              className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
-              onClick={() => setOpenIndex(openIndex === index ? null : index)}
-            >
-              <span className="font-semibold text-gray-900 pr-4">{faq.q}</span>
-              {openIndex === index ? (
-                <ChevronUp className="w-5 h-5 text-red-500 flex-shrink-0" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-gray-400 flex-shrink-0" />
-              )}
-            </button>
-            {openIndex === index && (
-              <div className="px-6 pb-6">
-                <p className="text-gray-600">{faq.a}</p>
-              </div>
-            )}
+  return (
+    <main className="min-h-screen bg-[#1a1a1a] px-4 pb-20 pt-32 text-[#e8e6e3]">
+      <div className="mx-auto max-w-5xl">
+        <section className="mb-12 text-center">
+          <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-lg border border-[#d4a574]/30 bg-[#d4a574]/10 text-[#d4a574]">
+            <HelpCircle className="h-7 w-7" />
           </div>
-        ))}
+          <p className="mb-3 text-sm font-bold uppercase tracking-wide text-[#d4a574]">FAQ</p>
+          <h1 className="text-4xl font-bold leading-tight text-[#e8e6e3] md:text-6xl">Frequently Asked Questions</h1>
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-8 text-[#9a948d]">
+            Everything you need to know about creating, editing, printing, and saving bead patterns with PixelBeads.
+          </p>
+        </section>
+
+        <section className="mb-10 grid gap-4 md:grid-cols-3">
+          {highlights.map((item) => {
+            const Icon = item.icon;
+            return (
+              <article key={item.title} className="craft-card p-5">
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-[#d4a574]/30 bg-[#d4a574]/10 text-[#d4a574]">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <h2 className="text-lg font-bold text-[#e8e6e3]">{item.title}</h2>
+                <p className="mt-2 text-sm leading-6 text-[#9a948d]">{item.text}</p>
+              </article>
+            );
+          })}
+        </section>
+
+        <section className="space-y-3">
+          {faqs.map((faq, index) => {
+            const isOpen = openIndex === index;
+            return (
+              <article
+                key={faq.q}
+                className={`overflow-hidden rounded-lg border transition ${
+                  isOpen ? 'border-[#d4a574]/40 bg-[#202020]' : 'border-[#3a3a3a] bg-[#202020] hover:border-[#5a5a5a]'
+                }`}
+              >
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between gap-4 px-5 py-5 text-left"
+                  onClick={() => setOpenIndex(isOpen ? null : index)}
+                >
+                  <span className="flex items-start gap-4">
+                    <span
+                      className={`mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-md border text-sm font-bold ${
+                        isOpen ? 'border-[#d4a574]/40 bg-[#d4a574]/10 text-[#d4a574]' : 'border-[#3a3a3a] bg-[#171717] text-[#a09b94]'
+                      }`}
+                    >
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <span className="text-base font-bold text-[#e8e6e3] md:text-lg">{faq.q}</span>
+                  </span>
+                  <ChevronDown className={`h-5 w-5 flex-shrink-0 text-[#d4a574] transition ${isOpen ? 'rotate-180' : ''}`} />
+                </button>
+                {isOpen && (
+                  <div className="border-t border-[#3a3a3a] bg-[#171717] px-5 py-5 md:pl-[4.75rem]">
+                    <p className="max-w-3xl leading-7 text-[#9a948d]">{faq.a}</p>
+                  </div>
+                )}
+              </article>
+            );
+          })}
+        </section>
+
+        <section className="mt-12 rounded-lg border border-[#d4a574]/30 bg-[#d4a574]/10 p-7 md:flex md:items-center md:justify-between md:gap-8">
+          <div>
+            <div className="mb-3 inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-[#d4a574]">
+              <Sparkles className="h-4 w-4" />
+              Still deciding?
+            </div>
+            <h2 className="text-2xl font-bold text-[#e8e6e3]">Try a photo and see the pattern instantly.</h2>
+            <p className="mt-2 text-sm leading-6 text-[#9a948d]">No account, no upload to server, no setup.</p>
+          </div>
+          <Link to="/image-to-pattern/" className="craft-btn mt-5 inline-flex items-center justify-center gap-2 px-5 py-3 md:mt-0">
+            Start Creating
+            <ArrowRight className="h-5 w-5" />
+          </Link>
+        </section>
       </div>
-    </div>
+    </main>
   );
 }

@@ -15,11 +15,11 @@ type FaqItem = {
 };
 
 const examples: Example[] = [
-  { id: 'landscape', name: 'Landscape', before: '/examples/landscape-before.webp', after: '/examples/landscape-after.webp' },
-  { id: 'sheep', name: 'Cute Puppy', before: '/examples/sheep-before.webp', after: '/examples/sheep.webp' },
-  { id: 'cat', name: 'Field Bunny', before: '/examples/cat-before.webp', after: '/examples/cat.webp' },
-  { id: 'panda', name: 'Lively Tiger', before: '/examples/panda-before.webp', after: '/examples/panda.webp' },
-  { id: 'fox', name: 'Mushroom Bear', before: '/examples/fox-before.webp', after: '/examples/fox.webp' },
+  { id: 'hat-kitty', name: 'Hat Kitty', before: '/examples/landscape-before.webp', after: '/examples/landscape-after.webp' },
+  { id: 'golden-puppy', name: 'Golden Puppy', before: '/examples/sheep-before.webp', after: '/examples/sheep.webp' },
+  { id: 'garden-bunny', name: 'Garden Bunny', before: '/examples/cat-before.webp', after: '/examples/cat.webp' },
+  { id: 'baby-tiger', name: 'Baby Tiger', before: '/examples/panda-before.webp', after: '/examples/panda.webp' },
+  { id: 'forest-teddy', name: 'Forest Teddy', before: '/examples/fox-before.webp', after: '/examples/fox.webp' },
 ];
 
 const features = [

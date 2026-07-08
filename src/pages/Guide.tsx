@@ -1,148 +1,168 @@
 import { Link } from 'react-router-dom';
-import { Upload, ArrowRight, Check, ArrowLeft } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, Download, Palette, SlidersHorizontal, Upload } from 'lucide-react';
 
 export function Guide() {
   const steps = [
     {
-      title: 'Choose Your Image',
-      content: 'The best images for Perler bead patterns have clear subjects, good contrast, and aren\'t too detailed. Portraits, cartoon characters, and simple landscapes work great.',
-      tips: [
-        'Use high-contrast images',
-        'Avoid overly complex scenes',
-        'Clear subjects work best',
-        'Good lighting helps accuracy',
-      ],
+      icon: Upload,
+      title: 'Choose a clean source photo',
+      content:
+        'Use a photo with one clear subject, strong lighting, and readable color blocks. Portraits, pets, game sprites, icons, and simple landscapes convert best.',
+      tips: ['High contrast beats tiny detail', 'Crop before uploading', 'Avoid busy backgrounds', 'Use bright, natural lighting'],
     },
     {
-      title: 'Upload to PixelBeads',
-      content: 'Go to our Photo to Pattern tool and upload your image. Supported formats include JPG and PNG, up to 10MB.',
-      tips: [
-        'Drag and drop or click to browse',
-        'Maximum file size: 10MB',
-        'JPG and PNG supported',
-        'Processing happens in your browser',
-      ],
+      icon: Palette,
+      title: 'Match to real bead colors',
+      content:
+        'PixelBeads compares your image against real bead palettes so the finished pattern is easier to build with actual Perler, Hama, Artkal, or MARD colors.',
+      tips: ['Pick your bead brand first', 'Use fewer colors for beginners', 'Keep rare colors optional', 'Review the palette before export'],
     },
     {
-      title: 'Customize Your Pattern',
-      content: 'Fine-tune your bead pattern with several options including bead brand, grid size, color limit, and dithering.',
-      tips: [
-        'Choose from Perler, Hama, Artkal, or MARD',
-        'Adjust grid width for more/less detail',
-        'Control color limit',
-        'Apply dithering for smoother transitions',
-      ],
+      icon: SlidersHorizontal,
+      title: 'Tune grid size and detail',
+      content:
+        'Larger grids preserve more detail; smaller grids are faster to finish. Adjust width, color count, cleanup, and dithering until the preview feels craft-ready.',
+      tips: ['Small charms: 32-64 columns', 'Wall art: 96-160 columns', 'Use dithering for gradients', 'Disable noisy colors when needed'],
     },
     {
-      title: 'Export and Print',
-      content: 'Download your pattern as a PDF with color chart and bead count. Start creating your bead art!',
-      tips: [
-        'PDF includes color chart',
-        'Exact bead counts provided',
-        'Print-ready templates',
-        'Grid overlay for easy placement',
-      ],
+      icon: Download,
+      title: 'Export, sort, and build',
+      content:
+        'Download a printable pattern with grid lines, color chart, and material counts. Sort beads by color first, then work section by section.',
+      tips: ['PDF for printing', 'PNG for sharing', 'CSV for material planning', 'Save an editor copy for later tweaks'],
     },
   ];
 
   const brands = [
-    { name: 'Perler', colors: 80, origin: 'USA', popular: true },
-    { name: 'Hama', colors: 70, origin: 'Denmark', popular: true },
-    { name: 'Artkal', colors: 200, origin: 'China', popular: false },
-    { name: 'MARD', colors: 50, origin: 'Japan', popular: false },
+    { name: 'Perler', colors: 80, origin: 'USA', note: 'Beginner friendly', popular: true },
+    { name: 'Hama', colors: 70, origin: 'Denmark', note: 'Classic craft choice', popular: true },
+    { name: 'Artkal', colors: 200, origin: 'China', note: 'Large palette range', popular: false },
+    { name: 'MARD', colors: 50, origin: 'Japan', note: 'Curated color set', popular: false },
   ];
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24">
-      <div className="mb-6">
-        <Link to="/" className="inline-flex items-center text-gray-500 hover:text-red-500 transition-colors">
-          <ArrowLeft className="w-4 h-4 mr-1" />
+    <main className="min-h-screen bg-[#1a1a1a] px-4 pb-20 pt-32 text-[#e8e6e3]">
+      <div className="mx-auto max-w-5xl">
+        <Link
+          to="/"
+          className="mb-8 inline-flex items-center gap-2 rounded-lg border border-[#3a3a3a] bg-[#252525] px-4 py-2 text-sm font-bold text-[#a09b94] transition hover:border-[#5a5a5a] hover:text-[#e8e6e3]"
+        >
+          <ArrowLeft className="h-4 w-4" />
           Back to Home
         </Link>
-      </div>
 
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          How to Make Perler Bead Patterns from Photos
-        </h1>
-        <p className="text-gray-600 text-lg">
-          A complete beginner guide to converting any photo into beautiful bead patterns
-        </p>
-      </div>
+        <section className="mb-14">
+          <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#3a3a3a] bg-[#252525] px-3 py-1.5 text-sm font-medium text-[#d4a574]">
+            Beginner Guide
+          </p>
+          <h1 className="max-w-4xl text-4xl font-bold leading-tight text-[#e8e6e3] md:text-6xl">
+            How to Make Perler Bead Patterns from Photos
+          </h1>
+          <p className="mt-5 max-w-3xl text-lg leading-8 text-[#9a948d]">
+            Convert a favorite photo into bead-ready pixel art, choose real bead colors, then export a printable pattern with color counts.
+          </p>
+        </section>
 
-      {/* What are Perler Beads */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">What Are Perler Beads?</h2>
-        <p className="text-gray-600 mb-4">
-          Perler beads (also known as fuse beads, Hama beads, or iron beads) are small plastic beads 
-          that can be arranged on a pegboard to create colorful patterns and designs. Once arranged, 
-          the beads are fused together using a household iron, creating a solid piece of pixel-style art.
-        </p>
-        <p className="text-gray-600">
-          Perler bead art has become increasingly popular among crafters, pixel art enthusiasts, 
-          and families looking for creative activities. From simple patterns for beginners to complex 
-          portraits and anime characters, the possibilities are endless.
-        </p>
-      </section>
+        <section className="mb-14 grid gap-5 md:grid-cols-[1fr_0.8fr]">
+          <div className="craft-card p-6">
+            <h2 className="text-2xl font-bold text-[#e8e6e3]">What Are Perler Beads?</h2>
+            <p className="mt-4 leading-7 text-[#9a948d]">
+              Perler beads, also called fuse beads, Hama beads, or iron beads, are small plastic beads arranged on a pegboard and fused
+              with heat. Because each bead behaves like a pixel, photos and illustrations can become physical pixel art.
+            </p>
+            <p className="mt-4 leading-7 text-[#9a948d]">
+              The trick is reducing detail without losing the subject. Good patterns balance grid size, color count, and readable shapes.
+            </p>
+          </div>
 
-      {/* Steps */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Step-by-Step Guide</h2>
-        <div className="space-y-8">
-          {steps.map((step, index) => (
-            <div key={index} className="bg-gray-50 rounded-2xl p-6">
-              <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white font-bold mr-3">
-                  {index + 1}
+          <div className="craft-card p-6">
+            <h2 className="text-2xl font-bold text-[#e8e6e3]">Quick Settings</h2>
+            <div className="mt-5 space-y-4">
+              {[
+                ['Simple icon', '48-64 columns, 12-20 colors'],
+                ['Pet portrait', '96-128 columns, 24-40 colors'],
+                ['Wall art', '128-180 columns, 40-60 colors'],
+              ].map(([name, value]) => (
+                <div key={name} className="rounded-lg border border-[#3a3a3a] bg-[#171717] p-4">
+                  <p className="font-bold text-[#e8e6e3]">{name}</p>
+                  <p className="mt-1 text-sm text-[#9a948d]">{value}</p>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900">{step.title}</h3>
-              </div>
-              <p className="text-gray-600 mb-4">{step.content}</p>
-              <ul className="space-y-2">
-                {step.tips.map((tip) => (
-                  <li key={tip} className="flex items-start">
-                    <Check className="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-600">{tip}</span>
-                  </li>
-                ))}
-              </ul>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* Supported Brands */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Supported Bead Brands</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {brands.map((brand) => (
-            <div key={brand.name} className="bg-gray-50 rounded-xl p-6">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="text-lg font-semibold text-gray-900">{brand.name}</h3>
-                {brand.popular && (
-                  <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full">Popular</span>
-                )}
-              </div>
-              <p className="text-gray-600">{brand.colors} colors available</p>
-              <p className="text-sm text-gray-500">Made in {brand.origin}</p>
+        <section className="mb-14">
+          <div className="mb-6 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-wide text-[#d4a574]">Workflow</p>
+              <h2 className="mt-2 text-3xl font-bold text-[#e8e6e3]">Step-by-Step Guide</h2>
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
 
-      {/* CTA */}
-      <section className="text-center bg-red-50 rounded-2xl p-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Ready to try it yourself?</h2>
-        <p className="text-gray-600 mb-6">Convert your first photo to a bead pattern in seconds.</p>
-        <Link
-          to="/image-to-pattern/"
-          className="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-xl text-white bg-red-500 hover:bg-red-600 transition-colors"
-        >
-          <Upload className="w-5 h-5 mr-2" />
-          Start Creating
-          <ArrowRight className="w-5 h-5 ml-2" />
-        </Link>
-      </section>
-    </div>
+          <div className="grid gap-5 md:grid-cols-2">
+            {steps.map((step, index) => {
+              const Icon = step.icon;
+              return (
+                <article key={step.title} className="craft-card p-6 craft-card-hover">
+                  <div className="mb-5 flex items-center gap-4">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-lg border border-[#d4a574]/30 bg-[#d4a574]/10 text-[#d4a574]">
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-[#d4a574]">Step {index + 1}</p>
+                      <h3 className="text-xl font-bold text-[#e8e6e3]">{step.title}</h3>
+                    </div>
+                  </div>
+                  <p className="leading-7 text-[#9a948d]">{step.content}</p>
+                  <ul className="mt-5 space-y-3">
+                    {step.tips.map((tip) => (
+                      <li key={tip} className="flex items-start gap-3 text-sm text-[#a09b94]">
+                        <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#d4a574]" />
+                        <span>{tip}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="mb-14">
+          <p className="text-sm font-bold uppercase tracking-wide text-[#d4a574]">Materials</p>
+          <h2 className="mt-2 text-3xl font-bold text-[#e8e6e3]">Supported Bead Brands</h2>
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {brands.map((brand) => (
+              <article key={brand.name} className="craft-card p-5">
+                <div className="mb-4 flex items-start justify-between gap-3">
+                  <h3 className="text-xl font-bold text-[#e8e6e3]">{brand.name}</h3>
+                  {brand.popular && (
+                    <span className="rounded-full border border-[#d4a574]/30 bg-[#d4a574]/10 px-2 py-1 text-xs font-bold text-[#d4a574]">
+                      Popular
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-[#9a948d]">{brand.colors} colors available</p>
+                <p className="mt-1 text-sm text-[#6b6560]">Made in {brand.origin}</p>
+                <p className="mt-4 rounded-md border border-[#3a3a3a] bg-[#171717] px-3 py-2 text-sm text-[#a09b94]">{brand.note}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section className="rounded-lg border border-[#d4a574]/30 bg-[#d4a574]/10 p-8 text-center">
+          <h2 className="text-3xl font-bold text-[#e8e6e3]">Ready to make your first pattern?</h2>
+          <p className="mx-auto mt-3 max-w-2xl leading-7 text-[#a09b94]">
+            Upload a photo, preview the bead colors, and export a print-ready pattern in a few clicks.
+          </p>
+          <Link to="/image-to-pattern/" className="craft-btn mt-6 inline-flex items-center justify-center gap-2 px-6 py-3">
+            <Upload className="h-5 w-5" />
+            Start Creating
+            <ArrowRight className="h-5 w-5" />
+          </Link>
+        </section>
+      </div>
+    </main>
   );
 }
