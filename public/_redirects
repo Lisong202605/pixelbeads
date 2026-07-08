@@ -1,6 +1,8 @@
 /image-to-pattern /image-to-pattern/ 301
+/ai-generator /image-to-pattern/ 301
 /editor /editor/ 301
 /gallery /gallery/ 301
+/patterns /gallery/ 301
 /templates /templates/ 301
 /guide /guide/ 301
 /faq /faq/ 301

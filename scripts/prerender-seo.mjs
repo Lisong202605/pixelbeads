@@ -5,6 +5,7 @@ import { fileURLToPath } from 'node:url';
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const dist = join(root, 'dist');
 const siteUrl = 'https://pixelbeads.design';
+const socialImageUrl = `${siteUrl}/examples/landscape-after.webp`;
 const baseHtml = await readFile(join(dist, 'index.html'), 'utf8');
 
 const pages = [
@@ -160,6 +161,13 @@ const escapeAttr = (value) =>
 
 const pageUrl = (path) => `${siteUrl}${path === '/' ? '/' : `${path}/`}`;
 
+function upsertHeadTag(html, pattern, tag) {
+  if (pattern.test(html)) {
+    return html.replace(pattern, tag);
+  }
+  return html.replace('</head>', `    ${tag}\n  </head>`);
+}
+
 function replaceOrInsertMeta(html, page) {
   const url = pageUrl(page.path);
   const jsonLd = {
@@ -185,6 +193,10 @@ function replaceOrInsertMeta(html, page) {
     .replace(/<meta name="twitter:title" content=".*?"\s*\/?>/s, `<meta name="twitter:title" content="${escapeAttr(page.title)}" />`)
     .replace(/<meta name="twitter:description" content=".*?"\s*\/?>/s, `<meta name="twitter:description" content="${escapeAttr(page.description)}" />`)
     .replace(/<script type="application\/ld\+json">.*?<\/script>/s, `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`);
+
+  next = upsertHeadTag(next, /<meta property="og:image" content=".*?"\s*\/?>/s, `<meta property="og:image" content="${socialImageUrl}" />`);
+  next = upsertHeadTag(next, /<meta name="twitter:image" content=".*?"\s*\/?>/s, `<meta name="twitter:image" content="${socialImageUrl}" />`);
+  next = upsertHeadTag(next, /<meta name="twitter:card" content=".*?"\s*\/?>/s, '<meta name="twitter:card" content="summary_large_image" />');
 
   if (!/<meta name="robots"/.test(next)) {
     next = next.replace('</head>', '    <meta name="robots" content="index, follow" />\n  </head>');
