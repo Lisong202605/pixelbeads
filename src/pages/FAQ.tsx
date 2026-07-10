@@ -15,6 +15,14 @@ export function FAQ() {
       a: 'We support JPG and PNG formats up to 10MB. For best results, use images with clear subjects and good contrast. Avoid blurry or low-resolution images.',
     },
     {
+      q: 'Can I convert an image to Perler beads online?',
+      a: 'Yes. Upload a JPG or PNG image, choose a bead palette, adjust the grid width and color count, then export a printable Perler bead pattern with bead counts.',
+    },
+    {
+      q: 'What is the best image size for a Perler bead pattern?',
+      a: 'Simple icons work well at 48 to 64 columns, portraits usually need 96 to 128 columns, and detailed wall art often needs 128 columns or more.',
+    },
+    {
       q: 'Can I mix different bead brands?',
       a: 'Currently, you can choose one bead brand per pattern. We support Perler, Hama, Artkal, and MARD palettes. Each brand has its own unique color range.',
     },

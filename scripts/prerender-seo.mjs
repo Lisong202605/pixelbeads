@@ -11,28 +11,38 @@ const baseHtml = await readFile(join(dist, 'index.html'), 'utf8');
 const pages = [
   {
     path: '/',
-    title: 'Free Perler Bead Pattern Maker | Convert Photos to Patterns',
+    title: 'Perler Bead Pattern Maker | Image to Perler Beads',
     description:
-      'Free online Perler bead pattern maker. Convert photos to bead art with CIEDE2000 color matching. Supports Perler, Hama, Artkal and MARD palettes. No sign-up needed.',
+      'Free Perler bead pattern maker and image to Perler beads converter. Upload a photo, match real Perler, Hama, Artkal or MARD colors, and export printable patterns.',
     priority: '1.0',
     body: `
-      <h1>Free Perler Bead Pattern Maker</h1>
+      <h1>Perler Bead Pattern Maker</h1>
       <p>PixelBeads converts photos and illustrations into printable Perler bead, Hama bead, Artkal and MARD patterns in your browser.</p>
-      <h2>Photo to Bead Art</h2>
+      <h2>Image to Perler Beads</h2>
       <p>Upload a JPG or PNG, choose the bead brand, set the grid width, limit colors and export a PNG or PDF pattern with bead counts.</p>
+      <h2>Free Pattern Generator</h2>
+      <p>Create fuse bead patterns for portraits, pets, sprites, logos and craft projects with no sign-up required.</p>
       <h2>Private Browser-Side Processing</h2>
       <p>Your image is processed locally so the photo does not need to leave your device.</p>
     `,
   },
   {
     path: '/image-to-pattern',
-    title: 'Image to Perler Bead Pattern Converter | PixelBeads',
+    title: 'Image to Perler Beads Converter | Free Pattern Maker',
     description:
-      'Convert an image into a Perler bead pattern online. Upload a JPG or PNG and create a printable fuse bead grid with brand color matching.',
+      'Convert image to Perler beads online. Upload a photo and create a printable Perler bead pattern with grid size controls, color matching and bead counts.',
     priority: '0.9',
     body: `
-      <h1>Image to Perler Bead Pattern Converter</h1>
-      <p>Turn photos, icons and illustrations into fuse bead patterns with adjustable grid size, color count and palette matching.</p>
+      <h1>Image to Perler Beads Converter</h1>
+      <p>Turn a photo, logo or illustration into a practical Perler bead pattern with an adjustable grid, real fuse bead palettes and exact material counts.</p>
+      <h2>Photo to Perler Bead Pattern</h2>
+      <p>Upload a JPG or PNG, choose the physical project size, set a realistic color limit and preview the result before printing.</p>
+      <h2>Recommended Image and Grid Settings</h2>
+      <p>Clear subjects, strong outlines and simple backgrounds convert best. Start at 32 to 48 columns for icons, 64 to 96 for portraits and 120 or more for detailed wall art.</p>
+      <h2>Match Real Fuse Bead Colors</h2>
+      <p>Use Perler, Hama, Artkal or MARD palettes, then export a PDF or PNG pattern with a color-by-color bead count.</p>
+      <h2>Private Image Conversion</h2>
+      <p>PixelBeads processes the source image locally in the browser. The photo does not need to be uploaded or stored on a server.</p>
     `,
   },
   {
@@ -59,24 +69,28 @@ const pages = [
   },
   {
     path: '/templates',
-    title: 'Perler Bead Pattern Templates and Board Sizes | PixelBeads',
+    title: 'Free Perler Bead Patterns and Templates | PixelBeads',
     description:
-      'Find Perler bead pattern ideas by category and choose small, medium, large or extra-large board sizes before generating a design.',
+      'Browse free Perler bead patterns and templates, then customize animal, kawaii, game, food and holiday designs in the PixelBeads editor.',
     priority: '0.7',
     body: `
-      <h1>Perler Bead Pattern Templates</h1>
+      <h1>Free Perler Bead Patterns and Templates</h1>
       <p>Plan animal, game, food, nature, geometric and holiday bead projects with board size guidance for simple and detailed designs.</p>
+      <h2>Printable Pattern Ideas</h2>
+      <p>Download PNG, SVG and material lists, or open a template in the editor to adjust colors before building.</p>
     `,
   },
   {
     path: '/guide',
-    title: 'How to Make Perler Bead Patterns from Photos | PixelBeads Guide',
+    title: 'How to Make Perler Bead Patterns from Photos',
     description:
-      'Learn how to choose an image, convert it into a Perler bead pattern, customize brand colors and export a printable bead art grid.',
+      'Learn how to turn a photo into a Perler bead pattern, choose the right grid size, match real bead colors and export a printable bead art grid.',
     priority: '0.7',
     body: `
       <h1>How to Make Perler Bead Patterns from Photos</h1>
       <p>Start with a clear photo, upload it to PixelBeads, choose a Perler, Hama, Artkal or MARD palette, then export a printable pattern.</p>
+      <h2>Image to Perler Beads Workflow</h2>
+      <p>The best results come from a clean subject, a realistic bead grid width and a color limit that matches your available beads.</p>
       <h2>Step-by-Step Guide</h2>
       <ol>
         <li>Choose a high-contrast image with a clear subject.</li>
@@ -88,9 +102,9 @@ const pages = [
   },
   {
     path: '/faq',
-    title: 'Perler Bead Pattern Maker FAQ | PixelBeads',
+    title: 'Perler Bead Pattern Maker FAQ | Image to Beads Help',
     description:
-      'Answers about supported image formats, privacy, printing, color matching, bead brands and editing generated Perler bead patterns.',
+      'Answers about image to Perler beads conversion, supported image formats, privacy, printing, color matching, bead brands and generated patterns.',
     priority: '0.6',
     body: `
       <h1>Perler Bead Pattern Maker FAQ</h1>

@@ -1,5 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Upload } from 'lucide-react';
 
 type Example = {
@@ -50,14 +50,14 @@ const features = [
 ];
 
 const resources = [
-  { name: 'Photo to pattern', desc: 'Convert photos into printable bead grids' },
-  { name: 'Pattern generator', desc: 'Free online Perler bead generator' },
-  { name: 'Minecraft patterns', desc: 'Block-style bead pattern settings' },
-  { name: 'Pokemon patterns', desc: 'Sprite and fan-art bead ideas' },
-  { name: 'Color chart guide', desc: 'Perler, Hama, Artkal, and MARD colors' },
-  { name: 'Board size guide', desc: 'Choose the right grid before export' },
-  { name: 'Cute patterns', desc: 'Cats, hearts, charms, and gift ideas' },
-  { name: 'Perler vs Hama vs Artkal', desc: 'Choose the right bead palette' },
+  { name: 'Image to Perler beads', desc: 'Convert photos into printable bead grids', href: '/image-to-pattern/' },
+  { name: 'Perler bead pattern maker', desc: 'Free online Perler bead generator', href: '/' },
+  { name: 'Free Perler bead templates', desc: 'Animals, kawaii food, game sprites, and holidays', href: '/templates/' },
+  { name: 'Photo to bead pattern guide', desc: 'Pick source photos, grid sizes, and color limits', href: '/guide/' },
+  { name: 'Color chart guide', desc: 'Perler, Hama, Artkal, and MARD colors', href: '/guide/' },
+  { name: 'Board size guide', desc: 'Choose the right grid before export', href: '/guide/' },
+  { name: 'Printable pattern FAQ', desc: 'PDF export, privacy, formats, and bead counts', href: '/faq/' },
+  { name: 'Perler vs Hama vs Artkal', desc: 'Choose the right bead palette', href: '/guide/' },
 ];
 
 const faqs: FaqItem[] = [
@@ -87,7 +87,7 @@ const faqs: FaqItem[] = [
   },
 ];
 
-function UploadBox() {
+export function UploadBox() {
   const [isDragging, setIsDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
@@ -156,7 +156,7 @@ function UploadBox() {
   );
 }
 
-function ExampleSlider() {
+export function ExampleSlider() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [slider, setSlider] = useState(50);
   const [isDragging, setIsDragging] = useState(false);
@@ -272,11 +272,10 @@ export function Home() {
       <section className="bg-[#1a1a1a] pt-32 pb-24 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold text-[#e8e6e3] leading-tight mb-6 tracking-tight pt-8">
-            Free Perler Bead Pattern Maker — Photo to Bead Art
+            Perler Bead Pattern Maker
           </h1>
           <p className="text-lg md:text-xl text-[#6b6560] max-w-2xl mx-auto mb-10 leading-relaxed">
-            Drag & drop any photo to instantly create perler bead, hama bead, or fuse bead patterns.
-            Accurate CIEDE2000 color matching with Perler, Hama, Artkal & MARD palettes.
+            Drag & drop any photo to instantly create Perler bead, Hama bead, or fuse bead patterns with accurate CIEDE2000 color matching and printable exports.
           </p>
           <div className="max-w-xl mx-auto mb-8">
             <UploadBox />
@@ -314,8 +313,8 @@ export function Home() {
 
       <section id="how-it-works" className="bg-[#1e1e1e] py-24 px-4 border-y border-[#2d2d2d]">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#e8e6e3] text-center mb-4">Create Bead Patterns in 3 Steps</h2>
-          <p className="text-[#6b6560] text-center mb-16 max-w-xl mx-auto">From photo to printable pattern in minutes</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#e8e6e3] text-center mb-4">Create Perler Bead Patterns in 3 Steps</h2>
+          <p className="text-[#6b6560] text-center mb-16 max-w-xl mx-auto">From image to Perler beads and printable pattern in minutes</p>
           <div className="grid md:grid-cols-3 gap-6">
             {['Upload a photo or illustration', 'Pick bead brand, colors & dither style', 'Download bead pattern & materials list'].map((step, index) => (
               <div key={step} className="text-center">
@@ -335,13 +334,13 @@ export function Home() {
           <p className="text-[#6b6560] text-center mb-16 max-w-xl mx-auto">Learn more about bead crafting</p>
           <div className="grid md:grid-cols-2 gap-3">
             {resources.map((resource) => (
-              <div key={resource.name} className="craft-card p-5 craft-card-hover transition-all duration-300 flex items-start justify-between gap-4 group">
+              <Link key={resource.name} to={resource.href} className="craft-card p-5 craft-card-hover transition-all duration-300 flex items-start justify-between gap-4 group">
                 <div>
                   <p className="font-medium text-[#e8e6e3] text-sm group-hover:text-[#d4a574] transition-colors">{resource.name}</p>
                   <p className="text-sm text-[#6b6560] mt-1">{resource.desc}</p>
                 </div>
-                <span className="text-[#4a4a4a] group-hover:text-[#d4a574] transition-colors flex-shrink-0">›</span>
-              </div>
+                <span className="text-[#4a4a4a] group-hover:text-[#d4a574] transition-colors flex-shrink-0">-&gt;</span>
+              </Link>
             ))}
           </div>
         </div>
@@ -349,7 +348,7 @@ export function Home() {
 
       <section className="bg-[#1e1e1e] py-24 px-4 border-y border-[#2d2d2d]">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#e8e6e3] text-center mb-4">Perler Bead Pattern Maker — FAQ</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#e8e6e3] text-center mb-4">Perler Bead Pattern Maker FAQ</h2>
           <p className="text-[#6b6560] text-center mb-16 max-w-xl mx-auto">Common questions answered</p>
           <FaqAccordion items={faqs} />
         </div>
@@ -357,10 +356,10 @@ export function Home() {
 
       <section className="bg-[#1a1a1a] py-24 px-4">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-[#e8e6e3] mb-4">About Pixelbead — The Free Perler Bead Pattern Generator</h2>
+          <h2 className="text-3xl md:text-4xl font-bold text-[#e8e6e3] mb-4">About PixelBeads, the Free Perler Bead Pattern Generator</h2>
           <p className="text-[#6b6560] leading-relaxed max-w-2xl mx-auto">
-            Pixelbead is a free online perler bead pattern maker that converts photos and illustrations into bead art designs.
-            It supports common fuse bead workflows and keeps image processing local in your browser.
+            PixelBeads is a free online Perler bead pattern maker that converts photos and illustrations into bead art designs.
+            Use it as an image to Perler beads converter, a fuse bead pattern generator, and a printable material planner for real craft projects.
           </p>
         </div>
       </section>

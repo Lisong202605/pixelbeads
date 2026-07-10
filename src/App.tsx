@@ -12,6 +12,7 @@ import { Terms } from './pages/Terms';
 import { Gallery } from './pages/Gallery';
 import { Templates } from './pages/Templates';
 import { Contact } from './pages/Contact';
+import { ImageToPattern } from './pages/ImageToPattern';
 
 function App() {
   return (
@@ -21,8 +22,8 @@ function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/image-to-pattern" element={<Home />} />
-            <Route path="/ai-generator" element={<Home />} />
+            <Route path="/image-to-pattern" element={<ImageToPattern />} />
+            <Route path="/ai-generator" element={<ImageToPattern />} />
             <Route path="/editor" element={<Editor />} />
             <Route path="/calculator" element={<Calculator />} />
             <Route path="/guide" element={<Guide />} />

@@ -60,6 +60,7 @@ export function Guide() {
           </h1>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-[#9a948d]">
             Convert a favorite photo into bead-ready pixel art, choose real bead colors, then export a printable pattern with color counts.
+            This image to Perler beads workflow works best when you balance detail, grid size, and the number of colors you actually own.
           </p>
         </section>
 
@@ -72,6 +73,9 @@ export function Guide() {
             </p>
             <p className="mt-4 leading-7 text-[#9a948d]">
               The trick is reducing detail without losing the subject. Good patterns balance grid size, color count, and readable shapes.
+            </p>
+            <p className="mt-4 leading-7 text-[#9a948d]">
+              If you are using a photo to Perler bead pattern converter, start with a cropped image and choose a target size before judging color accuracy.
             </p>
           </div>
 

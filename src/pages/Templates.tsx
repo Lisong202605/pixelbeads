@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Download, FileImage, FileSpreadsheet, Shapes, SlidersHorizontal } from 'lucide-react';
 
@@ -1135,7 +1135,7 @@ function colorLabel(key: string) {
   return colorNamesByCode[key] ?? key;
 }
 
-function templateSvg(template: PatternTemplate, cellSize = 12, includeGrid = true) {
+function templateSvg(template: PatternTemplate, cellSize = 12, includeGrid = true, includeBackground = true) {
   const width = template.width * cellSize;
   const height = template.height * cellSize;
   const rects: string[] = [];
@@ -1171,7 +1171,8 @@ function templateSvg(template: PatternTemplate, cellSize = 12, includeGrid = tru
     ? `<path d="${Array.from({ length: template.width + 1 }, (_, x) => `M${x * cellSize} 0V${height}`).join(' ')} ${Array.from({ length: template.height + 1 }, (_, y) => `M0 ${y * cellSize}H${width}`).join(' ')}" stroke="rgba(0,0,0,.12)" stroke-width="1"/>`
     : '';
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#ffffff"/>${rects.join('')}${grid}</svg>`;
+  const background = includeBackground ? '<rect width="100%" height="100%" fill="#ffffff"/>' : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" shape-rendering="crispEdges">${background}${rects.join('')}${grid}</svg>`;
 }
 
 function download(filename: string, content: string, type: string) {
@@ -1218,14 +1219,48 @@ function downloadCsv(template: PatternTemplate) {
 }
 
 function PatternPreview({ template }: { template: PatternTemplate }) {
-  const previewSrc = useMemo(
-    () => `data:image/svg+xml;charset=utf-8,${encodeURIComponent(templateSvg(template, 4, false))}`,
-    [template],
-  );
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [previewSrc, setPreviewSrc] = useState('');
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const renderPreview = () => {
+      setPreviewSrc(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(templateSvg(template, 4, false))}`);
+    };
+
+    if (!('IntersectionObserver' in window)) {
+      renderPreview();
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        renderPreview();
+        observer.disconnect();
+      },
+      { rootMargin: '320px' },
+    );
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, [template]);
 
   return (
-    <div className="aspect-square w-full bg-white p-2" aria-label={`${template.title} bead pattern preview`}>
-      <img src={previewSrc} alt="" className="h-full w-full object-contain [image-rendering:pixelated]" draggable={false} />
+    <div ref={containerRef} className="flex aspect-square w-full items-center justify-center bg-white p-2">
+      {previewSrc ? (
+        <img
+          src={previewSrc}
+          alt={`${template.title} free Perler bead pattern template preview`}
+          className="h-full w-full object-contain [image-rendering:pixelated]"
+          draggable={false}
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <span className="text-sm font-medium text-[#6b6560]">Loading pattern preview...</span>
+      )}
     </div>
   );
 }
@@ -1240,7 +1275,8 @@ export function Templates() {
   );
 
   const openInEditor = async (template: PatternTemplate) => {
-    const svg = templateSvg(template, 18, false);
+    const counts = colorCounts(template);
+    const svg = templateSvg(template, 1, false, false);
     const image = new Image();
     const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
     await new Promise<void>((resolve, reject) => {
@@ -1257,6 +1293,12 @@ export function Templates() {
     ctx.drawImage(image, 0, 0);
     URL.revokeObjectURL(url);
     sessionStorage.setItem('uploadedImage', canvas.toDataURL('image/png'));
+    sessionStorage.setItem('uploadedTemplateSettings', JSON.stringify({
+      title: template.title,
+      gridWidth: template.width,
+      maxColors: counts.length,
+      preserveColors: true,
+    }));
     navigate('/editor/');
   };
 
@@ -1268,10 +1310,10 @@ export function Templates() {
             <Shapes className="h-4 w-4" />
             Popular downloadable bead templates
           </p>
-          <h1 className="text-4xl font-bold leading-tight text-[#e8e6e3] md:text-5xl">Free Perler Bead Pattern Templates</h1>
+          <h1 className="text-4xl font-bold leading-tight text-[#e8e6e3] md:text-5xl">Free Perler Bead Patterns and Templates</h1>
           <p className="mt-4 text-base leading-7 text-[#9a948d]">
-            Browse original, higher-detail patterns inspired by popular craft themes: cute animals, kawaii food, game-style sprites,
-            space art, and seasonal decorations. Each design includes PNG, SVG, CSV, and editor import.
+            Browse original, higher-detail Perler bead patterns inspired by popular craft themes: cute animals, kawaii food, game-style sprites,
+            space art, and seasonal decorations. Each printable template includes PNG, SVG, CSV, and editor import.
           </p>
         </div>
 

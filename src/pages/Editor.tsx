@@ -34,6 +34,13 @@ interface HistoryEntry {
   colors: ColorInfo[];
 }
 
+interface TemplateImportSettings {
+  title: string;
+  gridWidth: number;
+  maxColors: number;
+  preserveColors: boolean;
+}
+
 interface PanelProps {
   title: string;
   icon: ReactNode;
@@ -50,6 +57,8 @@ const brands = [
   { id: 'mard', name: 'MARD', type: 'Hard beads', colors: 291 },
   { id: 'hama', name: 'Hama', type: 'Hard beads', colors: 70 },
 ];
+
+const templateBrand = { id: 'template', name: 'Template', type: 'Original colors', colors: 0 };
 
 const grainOptions = [
   { id: 'pixel', name: 'Clean pixel blocks', step: 32 },
@@ -123,6 +132,16 @@ function downloadText(text: string, filename: string, type: string) {
 }
 
 export function Editor() {
+  const [templateImport] = useState<TemplateImportSettings | null>(() => {
+    const storedSettings = sessionStorage.getItem('uploadedTemplateSettings');
+    if (!storedSettings) return null;
+    sessionStorage.removeItem('uploadedTemplateSettings');
+    try {
+      return JSON.parse(storedSettings) as TemplateImportSettings;
+    } catch {
+      return null;
+    }
+  });
   const [uploadedImage, setUploadedImage] = useState<string | null>(() => {
     const storedImage = sessionStorage.getItem('uploadedImage');
     if (storedImage) {
@@ -132,13 +151,15 @@ export function Editor() {
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [canvasUrl, setCanvasUrl] = useState<string | null>(null);
-  const [gridWidth, setGridWidth] = useState(140);
-  const [maxColors, setMaxColors] = useState(40);
+  const [gridWidth, setGridWidth] = useState(templateImport?.gridWidth ?? 140);
+  const [maxColors, setMaxColors] = useState(templateImport?.maxColors ?? 40);
+  const [preserveSourceColors, setPreserveSourceColors] = useState(Boolean(templateImport?.preserveColors));
+  const [importedTemplateTitle, setImportedTemplateTitle] = useState(templateImport?.title ?? '');
   const [fineProcessing, setFineProcessing] = useState(false);
   const [removeBackground, setRemoveBackground] = useState(false);
   const [minColorThreshold, setMinColorThreshold] = useState(0);
   const [grainEffect, setGrainEffect] = useState('pixel');
-  const [selectedBrand, setSelectedBrand] = useState('mard');
+  const [selectedBrand, setSelectedBrand] = useState(templateImport ? 'template' : 'mard');
   const [brandFilter, setBrandFilter] = useState('all');
   const [zoom, setZoom] = useState(1);
   const [showGrid, setShowGrid] = useState(false);
@@ -153,7 +174,8 @@ export function Editor() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const processingKeyRef = useRef('');
 
-  const selectedBrandInfo = brands.find((brand) => brand.id === selectedBrand) ?? brands[0];
+  const availableBrands = importedTemplateTitle ? [templateBrand, ...brands] : brands;
+  const selectedBrandInfo = availableBrands.find((brand) => brand.id === selectedBrand) ?? brands[0];
   const totalBeads = colors.reduce((sum, color) => sum + color.count, 0);
   const enabledColors = colors.filter((color) => color.enabled).length;
 
@@ -181,6 +203,9 @@ export function Editor() {
     const reader = new FileReader();
     reader.onload = (readerEvent) => {
       setUploadedImage(readerEvent.target?.result as string);
+      setPreserveSourceColors(false);
+      setImportedTemplateTitle('');
+      setSelectedBrand('mard');
       setHistory([]);
       setHistoryIndex(-1);
     };
@@ -199,7 +224,7 @@ export function Editor() {
         const pixelWidth = gridWidth;
         const pixelHeight = Math.max(1, Math.round(pixelWidth / aspectRatio));
         const grain = grainOptions.find((option) => option.id === grainEffect) ?? grainOptions[0];
-        const quantizeStep = fineProcessing ? Math.max(12, grain.step - 8) : grain.step;
+        const quantizeStep = preserveSourceColors ? 1 : fineProcessing ? Math.max(12, grain.step - 8) : grain.step;
 
         const offCanvas = document.createElement('canvas');
         offCanvas.width = pixelWidth;
@@ -332,6 +357,7 @@ export function Editor() {
     historyIndex,
     maxColors,
     minColorThreshold,
+    preserveSourceColors,
     removeBackground,
     selectedBrandInfo.name,
     showGrid,
@@ -467,6 +493,11 @@ export function Editor() {
 
       <div className="mx-auto grid max-w-[1880px] grid-cols-1 gap-5 px-4 py-5 xl:grid-cols-[minmax(0,1fr)_520px]">
         <main className="min-w-0">
+          {importedTemplateTitle && (
+            <div role="status" className="mb-4 rounded-lg border border-[#d4a574]/40 bg-[#d4a574]/10 px-4 py-3 text-sm text-[#e8e6e3]">
+              Editing <strong>{importedTemplateTitle}</strong> at its original {gridWidth}-column grid with {maxColors} colors.
+            </div>
+          )}
           <div className="mb-4 grid gap-3 rounded-lg border border-[#3a3a3a] bg-[#202020] p-3 md:grid-cols-[1fr_auto_auto] md:items-center">
             <label className="flex items-center gap-3 text-sm font-medium text-[#a09b94]">
               <span className="w-20 flex-shrink-0">Zoom</span>
@@ -577,9 +608,13 @@ export function Editor() {
               </div>
             </Panel>
 
-            <Panel title="Palette & Brand" icon={<Palette className="h-5 w-5" />} summary={`${selectedBrandInfo.name} - ${selectedBrandInfo.colors} reference colors`}>
+            <Panel
+              title="Palette & Brand"
+              icon={<Palette className="h-5 w-5" />}
+              summary={selectedBrand === 'template' ? 'Original template colors' : `${selectedBrandInfo.name} - ${selectedBrandInfo.colors} reference colors`}
+            >
               <div className="grid grid-cols-2 gap-3">
-                {brands.map((brand) => (
+                {availableBrands.map((brand) => (
                   <label key={brand.id} className={`relative cursor-pointer rounded-lg border p-3 transition ${selectedBrand === brand.id ? 'border-[#d4a574] bg-[#d4a574]/10' : 'border-[#3a3a3a] bg-[#171717] hover:border-[#5a5a5a]'}`}>
                     <input type="radio" name="brand" value={brand.id} checked={selectedBrand === brand.id} onChange={(event) => setSelectedBrand(event.target.value)} className="absolute right-3 top-3 accent-[#d4a574]" />
                     <span className="block pr-6 text-base font-bold text-[#e8e6e3]">{brand.name}</span>
